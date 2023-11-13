@@ -32,6 +32,9 @@
     <ClCompile Include="SourceCode.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="SomeTools.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SourceCode.rc">

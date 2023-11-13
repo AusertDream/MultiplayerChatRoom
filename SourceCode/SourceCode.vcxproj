@@ -133,6 +133,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SomeTools.cpp" />
     <ClCompile Include="SourceCode.cpp" />
   </ItemGroup>
   <ItemGroup>
