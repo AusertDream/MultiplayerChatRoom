@@ -13,3 +13,15 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <thread>
+#include <semaphore>
+#include <winsock.h>
+#include <queue>
+#include <stack>
+#include <map>
+
+

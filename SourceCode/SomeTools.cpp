@@ -11,3 +11,15 @@ T MyRandom(T min, T max) { //采用C++提供的随机数生成引擎来生成随机数
     T res = distrib(engine);//随机数
     return res;
 }
+
+
+/*
+将string类型转化为wchar_t*方法
+
+1.先将string转化为wstring
+2.然后将wstring转化为wchar_t*
+
+string s;
+wstring ss(s.begin(),s.end());
+wchar_t* res=ss.c_str();
+*/
