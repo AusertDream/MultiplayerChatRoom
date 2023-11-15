@@ -1,2 +1,5 @@
-﻿  SourceCode.cpp
+﻿  SomeTools.cpp
+  SourceCode.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include\semaphore(17): warning STL4038: The contents of <semaphore> are available only with C++20 or later.
+  正在生成代码...
   SourceCode.vcxproj -> E:\快捷方式包\大学作品\课设\OS课设\MultiplayerChatRoom\SourceCode\x64\Debug\SourceCode.exe
