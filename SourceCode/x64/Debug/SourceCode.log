@@ -1,2 +1,5 @@
-﻿  SourceCode.cpp
+﻿  InitWindows.cpp
+E:\快捷方式包\大学作品\课设\OS课设\MultiplayerChatRoom\SourceCode\InitWindows.cpp(19,57): warning C4267: “参数”: 从“size_t”转换到“DWORD”，可能丢失数据
+  SourceCode.cpp
+  正在生成代码...
   SourceCode.vcxproj -> E:\快捷方式包\大学作品\课设\OS课设\MultiplayerChatRoom\SourceCode\x64\Debug\SourceCode.exe

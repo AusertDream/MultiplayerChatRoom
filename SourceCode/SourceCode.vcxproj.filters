@@ -27,6 +27,12 @@
     <ClInclude Include="SourceCode.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="InitWindows.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="resource1.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceCode.cpp">
@@ -35,9 +41,15 @@
     <ClCompile Include="SomeTools.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="InitWindows.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SourceCode.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="UserList.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
