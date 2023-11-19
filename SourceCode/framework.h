@@ -6,10 +6,13 @@
 
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN             // 从 Windows 头文件中排除极少使用的内容
+#define _WINSOCK_DEPRECATED_NO_WARNINGS //取消掉使用inet_addr函数的警告
+#define _CRT_SECURE_NO_WARNINGS //取消掉不建议使用sprintf而是使用sprintf_s的警告
 // Windows 头文件
 #include <windows.h>
-// C 运行时头文件
+// C++ 运行时头文件
 #include <stdlib.h>
+#include <stdio.h>
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
@@ -19,9 +22,18 @@
 #include <algorithm>
 #include <thread>
 #include <semaphore>
-#include <winsock.h>
+#include <winSock2.h>
+#pragma comment(lib,"ws2_32.lib")
 #include <queue>
 #include <stack>
 #include <map>
+
+
+//struct UserMessage
+//{
+//	string Sender;
+//	string Receiver;
+//	vector<string> Msg;
+//};
 
 

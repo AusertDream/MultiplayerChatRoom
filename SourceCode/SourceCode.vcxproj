@@ -137,9 +137,12 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Client.cpp" />
     <ClCompile Include="InitWindows.cpp" />
+    <ClCompile Include="Server.cpp" />
     <ClCompile Include="SomeTools.cpp" />
     <ClCompile Include="SourceCode.cpp" />
+    <ClCompile Include="TestProgram.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SourceCode.rc" />

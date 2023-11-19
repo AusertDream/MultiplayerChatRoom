@@ -1,5 +1,6 @@
 #include "framework.h"
 #include "InitWindows.h"
+#include "SourceCode.h" //导入资源
 using namespace std;
 
 
@@ -25,6 +26,11 @@ void OnCommand(WPARAM wParam) {
 	switch (LOWORD(wParam)) {
 	case ID_CN:
 		//当点击中国区域的聊天室的时候
+		//模式对话框，程序会阻塞在这里
+		DialogBox(NULL, (char*)IDD_DIALOG1, NULL, DefWindowProc); 
+		//无模式对话框，不会发生阻塞。但是想要显示还需要使用showwindow函数。然而实际上还是阻塞（（（存疑
+		//HWND hDialog = CreateDialog(NULL, (char*)IDD_DIALOG1, hMainWindow, DefWindowProc);
+		//ShowWindow(hDialog, SW_SHOW);
 
 
 		break;
@@ -36,15 +42,42 @@ void OnCommand(WPARAM wParam) {
 	}
 }
 
+LRESULT CALLBACK SubMainWindowProc(
+	HWND hWnd, //窗口句柄
+	UINT msgID, //消息ID
+	WPARAM wParam, //消息参数1
+	LPARAM LParam //消息参数2
+) {
+	switch (msgID) {
+	case WM_PAINT:
+		//绘制欢迎文本
+		//绘制过程
+		PAINTSTRUCT ps;
+		//开始绘制
+		HDC hdc = BeginPaint(hWnd, &ps);
+		// 设置字体
+		HFONT hFont = CreateFont(20, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial");
+		//设置对象
+		SelectObject(hdc, hFont);
+		// 输出文字
+		TextOut(hdc, 155, 20, "欢迎来到多人聊天室", strlen("欢迎来到多人聊天室"));
+		// 清除字体
+		DeleteObject(hFont);
+		//结束绘制
+		EndPaint(hWnd, &ps);
+		break;
+	}
+	return DefWindowProc(hWnd, msgID, wParam, LParam);
+}
 
-LRESULT CALLBACK MyWndProc(
+
+LRESULT CALLBACK MainWindowProc(
 	HWND hWnd, //窗口句柄
 	UINT msgID, //消息ID
 	WPARAM wParam, //消息参数
 	LPARAM LParam //消息参数
 )
 {
-
 	switch (msgID) {
 	case WM_COMMAND: //处理菜单被点击的操作
 		OnCommand(wParam);
@@ -60,9 +93,9 @@ LRESULT CALLBACK MyWndProc(
 	case WM_SYSCOMMAND:
 		//当点击右上角的×的时候，弹出提示框，确认关闭吗
 		if (wParam == SC_CLOSE) {
-			int mRet = MessageBox(hWnd, "真的要退出吗QAQ", "Alert", MB_YESNO);
+			int mRet = MessageBox(hWnd, "真的要退出吗QAQ", "警告", MB_YESNO);
 			if (mRet == IDYES) {
-				//如果确认，那么什么都做，交给默认处理函数处理，关闭窗口
+				//如果确认，那么什么都不做，交给默认处理函数处理，关闭窗口
 			}
 			else {
 				//如果否认，那么提前结束函数，阻止默认处理函数关闭窗口
@@ -83,7 +116,7 @@ HWND CreateMainWindow(HINSTANCE hIns)
 	MainWindow.hCursor = NULL;//设置窗口光标，设置为NULL为默认光标。
 	MainWindow.hIcon = NULL;//设置窗口图标，NULL为默认图标。
 	MainWindow.hInstance = hIns; //当前程序实例句柄
-	MainWindow.lpfnWndProc = MyWndProc; //设置当前窗口的处理函数，传入处理函数的函数名即可。
+	MainWindow.lpfnWndProc = MainWindowProc; //设置当前窗口的处理函数，传入处理函数的函数名即可。
 	MainWindow.lpszClassName = "MainWindow";//设置窗口类的名字。
 	MainWindow.lpszMenuName = NULL; //设置窗口是否有菜单，NULL为没有菜单。
 	MainWindow.style = CS_HREDRAW | CS_VREDRAW; //设置窗口风格，CS_HREDRAW和CS_VREDRAW为当窗口水平或者垂直大小变化时，重画窗口
@@ -120,7 +153,7 @@ HWND CreateSubMainWindow(HINSTANCE hIns)
 	SubMainWindow.hCursor = NULL;//设置窗口光标，设置为NULL为默认光标。
 	SubMainWindow.hIcon = NULL;//设置窗口图标，NULL为默认图标。
 	SubMainWindow.hInstance = hIns; //当前程序实例句柄
-	SubMainWindow.lpfnWndProc = DefWindowProc; //设置当前窗口的处理函数，传入处理函数的函数名即可。
+	SubMainWindow.lpfnWndProc = SubMainWindowProc; //设置当前窗口的处理函数，传入处理函数的函数名即可。
 	SubMainWindow.lpszClassName = "SubMainWindow";//设置窗口类的名字。
 	SubMainWindow.lpszMenuName = NULL; //设置窗口是否有菜单，NULL为没有菜单。
 	SubMainWindow.style = CS_HREDRAW | CS_VREDRAW; //设置窗口风格，CS_HREDRAW和CS_VREDRAW为当窗口水平或者垂直大小变化时，重画窗口

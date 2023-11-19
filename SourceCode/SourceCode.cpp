@@ -4,6 +4,9 @@
 #include "framework.h"
 #include "SourceCode.h" //导入资源
 #include "InitWindows.h"
+#include "SomeTools.cpp"
+#include "Server.cpp"
+#include "Client.cpp"
 using namespace std;
 
 
@@ -15,13 +18,16 @@ int WINAPI WinMain(
 	int nCmdShow //窗口显示方式
 	)
 {
-
-	/*
+	thread thServer(StartServer);
+	thServer.detach();
+	thread thClient(StartClient);
+	thClient.detach();
+	
 	AllocConsole();//启用DOS窗口
 	hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);//获取标准输出句柄。
-	char* text = "放假了";
-	WriteConsole(hStdOutput, text, strlen(text), NULL, NULL); //在控制台上输出内容
-	*/
+	//char* text = "放假了";
+	//WriteConsole(hStdOutput, text, strlen(text), NULL, NULL); //在控制台上输出内容
+	
 
 	hMainWindow = CreateMainWindow(hIns); //创建主窗口
 	hSubMainWindow = CreateSubMainWindow(hIns); //创建子主窗口
@@ -39,9 +45,11 @@ int WINAPI WinMain(
 	SetWindowText(hLoginButton, "登录");
 	SetWindowText(hStartServer, "启动服务器");
 
+	
+
 	//TextOut(hdc, 100, 100, "hello", 5);
 
-	//PostMessage(hMainWindow, WM_SUCCESSLOGIN, NULL, NULL); //向mainWindow发送成功登录的消息
+	PostMessage(hMainWindow, WM_SUCCESSLOGIN, NULL, NULL); //向mainWindow发送成功登录的消息
 	
 	//显示窗口。
 	ShowWindow(hMainWindow,SW_SHOW); //第一个参数传入创建窗口返回的句柄，第二个参数传入显示的方式。SW_SHOW为默认显示。

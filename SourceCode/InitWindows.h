@@ -25,7 +25,8 @@ HWND CreateToolBar(HINSTANCE hIns); //创建工具栏
 HWND CreateTextShowWindow(HINSTANCE hIns); //创建聊天记录显示框
 HWND CreateTextAlias(HINSTANCE hIns);//创建昵称提示文字
 HWND CreateStartServer(HINSTANCE hIns);//创建启动服务器的按钮
-LRESULT CALLBACK MyWndProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam);//窗口处理函数，处理消息。
+LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam);//主窗口处理函数，处理消息。
+LRESULT CALLBACK SubMainWindowProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam);//子窗口的处理函数
 void func();
 void OnCommand(WPARAM wParam); //处理菜单被点击的操作
 
