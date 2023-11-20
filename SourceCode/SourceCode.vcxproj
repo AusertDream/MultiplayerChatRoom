@@ -110,6 +110,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -129,12 +130,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="InitWindows.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="resource1.h" />
+    <ClInclude Include="Server.h" />
+    <ClInclude Include="SomeTools.h" />
     <ClInclude Include="SourceCode.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TestProgram.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp" />

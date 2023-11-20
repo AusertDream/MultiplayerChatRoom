@@ -1,8 +1,8 @@
+#pragma once
 #include "framework.h"
 #include "InitWindows.h"
 #include "SourceCode.h" //导入资源
 using namespace std;
-
 
 HANDLE hStdOutput = 0; //添加DOS控制台窗口用于DEBUG
 
@@ -65,6 +65,16 @@ LRESULT CALLBACK SubMainWindowProc(
 		DeleteObject(hFont);
 		//结束绘制
 		EndPaint(hWnd, &ps);
+		break;
+	}
+	return DefWindowProc(hWnd, msgID, wParam, LParam);
+}
+
+LRESULT CALLBACK StartServerButtonProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam) {
+	switch (msgID)
+	{
+	case WM_COMMAND:
+		MessageBox(NULL, "Button is pressed", "y", MB_OK);
 		break;
 	}
 	return DefWindowProc(hWnd, msgID, wParam, LParam);

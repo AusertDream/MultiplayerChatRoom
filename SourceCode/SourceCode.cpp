@@ -1,12 +1,12 @@
 ﻿// SourceCode.cpp : 定义应用程序的入口点。
 //
-
+#pragma once
 #include "framework.h"
 #include "SourceCode.h" //导入资源
 #include "InitWindows.h"
-#include "SomeTools.cpp"
-#include "Server.cpp"
-#include "Client.cpp"
+#include "SomeTools.h"
+#include "Server.h"
+#include "Client.h"
 using namespace std;
 
 

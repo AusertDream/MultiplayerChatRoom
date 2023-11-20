@@ -4,7 +4,6 @@
 #include "SourceCode.h"
 using namespace std;
 
-
 extern HANDLE hStdOutput; //添加DOS控制台窗口用于DEBUG
 #define WM_SUCCESSLOGIN WM_USER+1011  //成功登录的消息
 //所有的窗口句柄
@@ -27,6 +26,7 @@ HWND CreateTextAlias(HINSTANCE hIns);//创建昵称提示文字
 HWND CreateStartServer(HINSTANCE hIns);//创建启动服务器的按钮
 LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam);//主窗口处理函数，处理消息。
 LRESULT CALLBACK SubMainWindowProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam);//子窗口的处理函数
+LRESULT CALLBACK StartServerButtonProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam);//启动服务器按钮的消息处理函数
 void func();
 void OnCommand(WPARAM wParam); //处理菜单被点击的操作
 

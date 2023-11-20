@@ -1,12 +1,16 @@
+#pragma once
 #include "framework.h"
 #include "InitWindows.h"
+#include "Client.h"
 using namespace std;
 typedef long long ll;
+
+
 //客户端文件
 
 
 
-static void StartClient() {
+extern void StartClient() {
 	//1.确定协议版本
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -49,5 +53,7 @@ static void StartClient() {
 	while(true) {
 		send(sSocket, buff.c_str(), buff.size(), NULL);
 	}
+
+
 
 }

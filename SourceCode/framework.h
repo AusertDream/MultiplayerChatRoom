@@ -13,6 +13,7 @@
 // C++ 运行时头文件
 #include <stdlib.h>
 #include <stdio.h>
+#include <atltime.h>
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
@@ -27,13 +28,9 @@
 #include <queue>
 #include <stack>
 #include <map>
+#include <set>
+#include<random>
 
 
-//struct UserMessage
-//{
-//	string Sender;
-//	string Receiver;
-//	vector<string> Msg;
-//};
 
 
