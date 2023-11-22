@@ -53,9 +53,6 @@
     <ClCompile Include="SomeTools.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="InitWindows.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Server.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

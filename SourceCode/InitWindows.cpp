@@ -1,4 +1,3 @@
-#pragma once
 #include "framework.h"
 #include "InitWindows.h"
 #include "SourceCode.h" //导入资源
@@ -7,6 +6,7 @@ using namespace std;
 HANDLE hStdOutput = 0; //添加DOS控制台窗口用于DEBUG
 
 //#define WM_MYMSG WM_USER+1011 自定义消息类型
+
 
 //所有窗口的句柄
 HWND hMainWindow, hSubMainWindow, hLoginInput, hLoginButton, hTextInput, hUserList, hSendButton, hToolBar, hTextShowWindow;
@@ -39,6 +39,15 @@ void OnCommand(WPARAM wParam) {
 
 
 		break;
+	case BUTTONLOGIN:
+		TCHAR buffer[256];
+		GetWindowText(hTextAlias, buffer, 256);
+		
+		MessageBox(hMainWindow, "login is pressed", "LOGIN", MB_OK);
+		break;
+	case BUTTONSERVER:
+		MessageBox(hMainWindow, "server is pressed", "button", MB_OK);
+		break;
 	}
 }
 
@@ -49,6 +58,9 @@ LRESULT CALLBACK SubMainWindowProc(
 	LPARAM LParam //消息参数2
 ) {
 	switch (msgID) {
+	case WM_COMMAND: //处理菜单被点击的操作
+		OnCommand(wParam);
+		break;
 	case WM_PAINT:
 		//绘制欢迎文本
 		//绘制过程
@@ -70,15 +82,7 @@ LRESULT CALLBACK SubMainWindowProc(
 	return DefWindowProc(hWnd, msgID, wParam, LParam);
 }
 
-LRESULT CALLBACK StartServerButtonProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam) {
-	switch (msgID)
-	{
-	case WM_COMMAND:
-		MessageBox(NULL, "Button is pressed", "y", MB_OK);
-		break;
-	}
-	return DefWindowProc(hWnd, msgID, wParam, LParam);
-}
+
 
 
 LRESULT CALLBACK MainWindowProc(
@@ -226,7 +230,7 @@ HWND CreateLoginButton(HINSTANCE hIns)
 		200,
 		25,
 		hSubMainWindow,
-		NULL,
+		(HMENU)BUTTONLOGIN,
 		hIns,
 		NULL
 	);
@@ -387,7 +391,7 @@ HWND CreateStartServer(HINSTANCE hIns) {
 		100,
 		20,
 		hSubMainWindow,//设置父窗口，没有置空NULL
-		NULL,//设置菜单，没有菜单为NULL
+		(HMENU)BUTTONSERVER,//设置菜单，没有菜单为NULL
 		hIns,//当前程序实例句柄
 		NULL//没啥用的参数
 	);

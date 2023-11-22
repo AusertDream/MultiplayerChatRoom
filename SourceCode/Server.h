@@ -8,13 +8,15 @@ typedef long long ll;
 #define MAX_NUMBER  101
 
 //存放当前在线用户
-extern set<string> UserList;
+extern set<wstring> UserList;
 //存放当前所有线程
 extern vector<thread> allThread;
 //存放当前所有socket链接
 extern vector<SOCKET> allSocket;
 //将线程ID单一映射到用户姓名上
-extern map<thread::id, string> ID_UserName;
+extern map<thread::id, wstring> ID_UserName;
+
+extern bool isStart;
 
 //服务端文件
 // 

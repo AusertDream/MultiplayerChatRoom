@@ -14,8 +14,8 @@ template<typename T> //使用函数模板的MyRandom函数
 T MyRandom(T min, T max);
 
 typedef struct UserMessage {
-    string UserName;
-    vector<string> Msg;
+    wstring UserName;
+    vector<wstring> Msg;
     CTime timeInfo;
 };
 
@@ -24,8 +24,8 @@ typedef struct UserMessage {
 typedef struct UserParam
 {
     int Type;
-    string Sender;
-    string Receiver;
+    wstring Sender;
+    wstring Receiver;
     UserMessage Msg;
     bool res;
 };

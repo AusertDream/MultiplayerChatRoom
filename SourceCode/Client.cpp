@@ -15,7 +15,7 @@ extern void StartClient() {
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2) {
-		MessageBox(hMainWindow, "通信版本非2.2", "Error", MB_OK);
+		MessageBox(hMainWindow, L"通信版本非2.2", L"Error", MB_OK);
 		//清理版本信息
 		WSACleanup();
 		return;
@@ -24,10 +24,9 @@ extern void StartClient() {
 	//采用流传输模式，TCP协议。AF_INET表示使用的传输协议为TCP,UDP之类的协议。
 	SOCKET sSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (SOCKET_ERROR == sSocket) {
-		char* ErrorMsg = " ";
 		//如果创建失败输出报错信息
-		sprintf(ErrorMsg, "创建socket失败：%d\n", GetLastError());
-		MessageBox(hMainWindow, ErrorMsg, "Error", MB_OK);
+
+		MessageBox(hMainWindow, L"创建socket失败", L"Error", MB_OK);
 		return;
 	}
 	//3.确定服务器的协议地址簇
@@ -39,12 +38,10 @@ extern void StartClient() {
 	//4. 连接服务器
 	int r = connect(sSocket, (sockaddr*)&addr, sizeof addr);
 	if (r == -1) {
-		char* ErrorMsg = " ";
 		//如果连接失败输出报错信息
-		sprintf(ErrorMsg, "连接失败：%d\n", GetLastError());
 		closesocket(sSocket); //断开链接
 		WSACleanup(); //清理协议版本信息
-		MessageBox(hMainWindow, ErrorMsg, "Error", MB_OK);
+		MessageBox(hMainWindow, L"连接失败", L"Error", MB_OK);
 		return;
 	}
 
@@ -53,7 +50,4 @@ extern void StartClient() {
 	while(true) {
 		send(sSocket, buff.c_str(), buff.size(), NULL);
 	}
-
-
-
 }
