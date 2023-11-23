@@ -6,6 +6,7 @@ using namespace std;
 typedef long long ll;
 
 #define MAX_NUMBER  101
+#define MAX_BUFFER_SIZE 10240
 
 //存放当前在线用户
 extern set<wstring> UserList;

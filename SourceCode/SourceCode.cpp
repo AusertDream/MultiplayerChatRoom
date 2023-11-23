@@ -78,7 +78,6 @@ int WINAPI WinMain(
 
 	
 
-	//TextOut(hdc, 100, 100, "hello", 5);
 
 	
 	
@@ -150,7 +149,7 @@ SOCKET StartClient() {
 	//4. 连接服务器
 	int r = connect(sSocket, (sockaddr*)&addr, sizeof addr);
 	if (r == -1) {
-		char ErrorMsg[256];
+		char ErrorMsg[MAX_BUFFER_SIZE];
 		//如果连接失败输出报错信息
 		sprintf(ErrorMsg, "连接失败：%d\n", GetLastError());
 		closesocket(sSocket); //断开链接
@@ -200,8 +199,8 @@ void thRecv()
 	//5.接受消息
 	while (true) {
 		UserParam recvBuffer;
-		char buff[256];
-		r = recv(sSocket, buff, 256, NULL);
+		char buff[MAX_BUFFER_SIZE];
+		r = recv(sSocket, buff, MAX_BUFFER_SIZE, NULL);
 		deserialize(buff, recvBuffer);
 		if (recvBuffer.Type == NORMAL_MSG) {
 			//如果是普通消息
@@ -267,8 +266,8 @@ void OnCommand(WPARAM wParam) {
 			MessageBox(hMainWindow, L"服务器未启动，请先启动服务器",L"Oops", MB_OK);
 			break;
 		}
-		TCHAR buffer[256];
-		GetWindowTextW(hLoginInput, buffer, 256);
+		TCHAR buffer[MAX_BUFFER_SIZE];
+		GetWindowTextW(hLoginInput, buffer, MAX_BUFFER_SIZE);
 		username.assign(buffer);
 		if (username.size() == 0) {
 			MessageBox(hMainWindow, L"请不要输入空昵称", L"Oops", MB_OK);
@@ -280,9 +279,9 @@ void OnCommand(WPARAM wParam) {
 			buff.Receiver = L"Server";
 			buff.Msg.UserName = username;
 			buff.Msg.timeInfo = GetCurrentTime();
-			char buf[256];
+			char buf[MAX_BUFFER_SIZE];
 			serialize(buff, buf);
-			send(sendSocket, buf, 256, NULL);
+			send(sendSocket, "buf", sizeof("buf"), NULL);
 	}
 	break;
 	}

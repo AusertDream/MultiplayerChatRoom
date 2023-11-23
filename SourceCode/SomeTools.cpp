@@ -23,6 +23,8 @@ T MyRandom(T min, T max) { //采用C++提供的随机数生成引擎来生成随机数
 
 
 
+
+
 // 序列化函数：将结构体数据复制到字符数组中 方便使用socket发送数据
 void serialize(const UserParam& data, char* buffer) {
     memcpy(buffer, &data, sizeof(UserParam));

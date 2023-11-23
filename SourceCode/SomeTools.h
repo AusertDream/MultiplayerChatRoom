@@ -23,11 +23,12 @@ typedef struct UserMessage {
 //定义用户使用socket发送的数据包的格式
 typedef struct UserParam
 {
-    int Type;
+    int Type=-1;
     wstring Sender;
     wstring Receiver;
     UserMessage Msg;
     bool res;
+    
 };
 
 

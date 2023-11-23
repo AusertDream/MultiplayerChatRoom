@@ -84,11 +84,11 @@ void OnSend(SOCKET cSocket, UserParam receivedData) {
 	SendData.Sender = L"Server";
 	SendData.Receiver = L"ALL";
 	//将结构体序列化为字符数组，然后使用send发送出去
-	char buffer[sizeof(UserParam)];
+	char buffer[MAX_BUFFER_SIZE];
 	serialize(SendData, buffer);
 	//发送给所有客户端
 	for (int i = 0; i < MAX_NUMBER; i++) {
-		send(allSocket[i], buffer, sizeof buffer, NULL);
+		send(allSocket[i], buffer, MAX_BUFFER_SIZE, NULL);
 	}
 }
 
@@ -100,9 +100,9 @@ void OnLogIn(SOCKET cSocket, UserParam receivedData) {
 		res.Type = LOGIN_RESULT;
 		res.Sender = L"Server";
 		res.res = false;
-		char buff[sizeof(res)];
+		char buff[MAX_BUFFER_SIZE];
 		serialize(res, buff);
-		send(cSocket, buff, sizeof buff, NULL);
+		send(cSocket, buff, MAX_BUFFER_SIZE, NULL);
 		ProtectUserList.unlock();
 		return;
 	}
@@ -114,9 +114,9 @@ void OnLogIn(SOCKET cSocket, UserParam receivedData) {
 		res.Type = LOGIN_RESULT;
 		res.res = true;
 		res.Sender = L"Server";
-		char buff[sizeof(res)];
+		char buff[MAX_BUFFER_SIZE];
 		serialize(res, buff);
-		send(cSocket, buff, sizeof buff, NULL);
+		send(cSocket, buff, MAX_BUFFER_SIZE, NULL);
 		ProtectUserList.unlock();
 		return;
 	}
@@ -131,18 +131,18 @@ void SendRecvProc(SOCKET cSocket) {
 	
 	int ret = 0;
 	//7.通信
-	char recvBuff[sizeof(UserParam)];
+	char recvBuff[MAX_BUFFER_SIZE];
 	while (true) {
 		//接收消息
-		ret = recv(cSocket, recvBuff, sizeof(UserParam), NULL);
+		ret = recv(cSocket, recvBuff, MAX_BUFFER_SIZE, NULL);
 		if (ret <= 0) {
 			//如果消息接收异常
 			closesocket(cSocket); //断开链接
 			WSACleanup(); //清理协议版本信息
 		}
 		
+		continue;
 		
-		WriteConsole(hStdOutput, L"recvBuff", sizeof("recvBuff"), NULL, NULL);
 		// 反序列化接收到的数据
 		UserParam receivedData;
 		deserialize(recvBuff, receivedData);
