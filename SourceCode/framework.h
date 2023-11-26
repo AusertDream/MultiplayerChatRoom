@@ -8,6 +8,7 @@
 #define WIN32_LEAN_AND_MEAN             // 从 Windows 头文件中排除极少使用的内容
 #define _WINSOCK_DEPRECATED_NO_WARNINGS //取消掉使用inet_addr函数的警告
 #define _CRT_SECURE_NO_WARNINGS //取消掉不建议使用sprintf而是使用sprintf_s的警告
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS //取消掉使用wstring_convert的警告
 // Windows 头文件
 #include <windows.h>
 // C++ 运行时头文件
@@ -31,6 +32,8 @@
 #include <set>
 #include<random>
 #include<mutex>
+#include <locale>
+#include <codecvt>
 
 
 

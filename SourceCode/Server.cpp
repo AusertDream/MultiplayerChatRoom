@@ -16,11 +16,14 @@ vector<thread> allThread;
 vector<SOCKET> allSocket;
 //将线程ID单一映射到用户姓名上
 map<thread::id, wstring> ID_UserName;
+//群聊的聊天记录
+vector<UserMessage> ChatRecordGlobal;
 
 bool isStart = false; //用来表示服务端是否启动
 
 mutex ProtectUserList; //用来保护UserList的互斥锁
 
+//传输文件格式为  消息类型 发送者 接受者 消息内容 消息根据空格分开
 
 //服务端文件
 
@@ -31,7 +34,7 @@ SOCKET InitServer() {
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2) {
-		MessageBox(hMainWindow, L"通信版本非2.2", L"Error", MB_OK);
+		MessageBox(hMainWindow, "通信版本非2.2", "Error", MB_OK);
 		//清理版本信息
 		WSACleanup();
 	}
@@ -41,7 +44,7 @@ SOCKET InitServer() {
 	if (SOCKET_ERROR == sSocket) {
 		//如果创建失败输出报错信息
 		
-		MessageBox(hMainWindow, L"创建socket失败", L"Error", MB_OK);
+		MessageBox(hMainWindow, "创建socket失败", "Error", MB_OK);
 	}
 	//3.确定服务器的协议地址簇
 	SOCKADDR_IN addr = { 0 };
@@ -56,7 +59,7 @@ SOCKET InitServer() {
 		//如果绑定失败输出报错信息
 		closesocket(sSocket); //断开链接
 		WSACleanup(); //清理协议版本信息
-		MessageBox(hMainWindow, L"绑定失败", L"Error", MB_OK);
+		MessageBox(hMainWindow, "绑定失败", "Error", MB_OK);
 	}
 
 	//5.监听
@@ -67,7 +70,7 @@ SOCKET InitServer() {
 		
 		closesocket(sSocket); //断开链接
 		WSACleanup(); //清理协议版本信息
-		MessageBox(hMainWindow, L"监听失败", L"Error", MB_OK);
+		MessageBox(hMainWindow, "监听失败", "Error", MB_OK);
 	}
 	return sSocket;
 }
@@ -84,11 +87,18 @@ void OnSend(SOCKET cSocket, UserParam receivedData) {
 	SendData.Sender = L"Server";
 	SendData.Receiver = L"ALL";
 	//将结构体序列化为字符数组，然后使用send发送出去
-	char buffer[MAX_BUFFER_SIZE];
-	serialize(SendData, buffer);
+	wstring buffer;
+	buffer.push_back(SendData.Type);
+	buffer.push_back(L' ');
+	buffer.append(SendData.Sender);
+	buffer.push_back(L' ');
+	buffer.append(SendData.Receiver);
+	buffer.push_back(L' ');
+	buffer.append(SendData.Msg);
+	string s=WstringToString(buffer);
 	//发送给所有客户端
 	for (int i = 0; i < MAX_NUMBER; i++) {
-		send(allSocket[i], buffer, MAX_BUFFER_SIZE, NULL);
+		send(allSocket[i], s.c_str(), s.size(), NULL);
 	}
 }
 
@@ -96,13 +106,15 @@ void OnLogIn(SOCKET cSocket, UserParam receivedData) {
 	ProtectUserList.lock();
 	//如果已经存在该用户则返回false
 	if (UserList.find(receivedData.Sender) != UserList.end()) {
-		UserParam res;
-		res.Type = LOGIN_RESULT;
-		res.Sender = L"Server";
-		res.res = false;
-		char buff[MAX_BUFFER_SIZE];
-		serialize(res, buff);
-		send(cSocket, buff, MAX_BUFFER_SIZE, NULL);
+		wstring buffer;
+		buffer.push_back(LOGIN_RESULT);
+		buffer.push_back(L' ');
+		buffer.append(L"Server");
+		buffer.push_back(L' ');
+		buffer.push_back(L' ');
+		buffer.push_back(L'false');
+		string s=WstringToString(buffer);
+		send(cSocket, s.c_str(), s.size(), NULL);
 		ProtectUserList.unlock();
 		return;
 	}
@@ -110,13 +122,17 @@ void OnLogIn(SOCKET cSocket, UserParam receivedData) {
 	else {
 		UserList.insert(receivedData.Sender);
 		ID_UserName[this_thread::get_id()] = receivedData.Sender;
-		UserParam res;
-		res.Type = LOGIN_RESULT;
-		res.res = true;
-		res.Sender = L"Server";
-		char buff[MAX_BUFFER_SIZE];
-		serialize(res, buff);
-		send(cSocket, buff, MAX_BUFFER_SIZE, NULL);
+		wstring buffer;
+		buffer.push_back(LOGIN_RESULT);
+		buffer.push_back(L' ');
+		buffer.append(L"Server");
+		buffer.push_back(L' ');
+		buffer.push_back(L' ');
+		buffer.push_back(L'true');
+		USES_CONVERSION;
+		string s(W2A(buffer.c_str()));
+		s.push_back('\0');
+		send(cSocket, s.c_str(), s.size(), NULL);
 		ProtectUserList.unlock();
 		return;
 	}
@@ -140,23 +156,25 @@ void SendRecvProc(SOCKET cSocket) {
 			closesocket(cSocket); //断开链接
 			WSACleanup(); //清理协议版本信息
 		}
-		
-		continue;
-		
-		// 反序列化接收到的数据
+		//将接收到的数据转换为宽字符
+		USES_CONVERSION;
+		wchar_t* wRecvBuff = A2W(recvBuff);
+		wstring buffer(wRecvBuff);
+		//将接受到的数据解包，分析。
 		UserParam receivedData;
-		deserialize(recvBuff, receivedData);
+		openTheBuff(buffer, receivedData);
+		
 		//如果接收到的数据类型不是登录请求或者登出请求或者普通消息则不处理
-		if (receivedData.Type != LOGIN_REQUEST && receivedData.Type != LOGOUT_REQUEST&& receivedData.Type!= NORMAL_MSG&&receivedData.Type!= LOGIN_RESULT) {
+		if (recvBuff[0] != LOGIN_REQUEST && recvBuff[0] != LOGOUT_REQUEST&& recvBuff[0]!= NORMAL_MSG&& recvBuff[0]!= LOGIN_RESULT) {
 			continue;
 		}
 		//根据数据类型来处理消息内容
-		switch (receivedData.Type) {
+		switch (recvBuff[0]) {
 		case NORMAL_MSG:
 			OnSend(cSocket, receivedData);
 			break;
 		case LOGIN_REQUEST:
-			OnLogIn(cSocket,receivedData);
+			OnLogIn(cSocket, receivedData);
 			break;
 		case LOGOUT_REQUEST:
 			OnLogOut(cSocket, receivedData);
@@ -178,7 +196,7 @@ void StartServer() {
 			//如果等待失败说明服务器崩溃输出报错信息
 			closesocket(sSocket); //断开链接
 			WSACleanup(); //清理协议版本信息
-			MessageBox(hMainWindow, L"服务器崩溃", L"Error", MB_OK);
+			MessageBox(hMainWindow, "服务器崩溃", "Error", MB_OK);
 			return;
 		}
 		allSocket[i] = cSocket;

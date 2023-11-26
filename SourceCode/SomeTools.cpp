@@ -6,10 +6,10 @@ typedef long long ll;
 
 
 
-#define NORMAL_MSG  1
-#define LOGIN_REQUEST  2
-#define LOGOUT_REQUEST 3
-#define LOGIN_RESULT 4
+#define NORMAL_MSG  '1'
+#define LOGIN_REQUEST  '2'
+#define LOGOUT_REQUEST '3'
+#define LOGIN_RESULT '4'
 
 template<typename T> //使用函数模板的MyRandom函数
 T MyRandom(T min, T max) { //采用C++提供的随机数生成引擎来生成随机数
@@ -34,6 +34,54 @@ void serialize(const UserParam& data, char* buffer) {
 void deserialize(const char* buffer, UserParam& data) {
     memcpy(&data, buffer, sizeof(UserParam));
 }
+
+
+//解包函数
+void openTheBuff(wstring buffer, UserParam& data) {
+	int pos = 0;
+	int len = buffer.length();
+	int cnt = 0;
+	while (pos < len) {
+		int next = buffer.find(L" ", pos);
+		if (next == -1) {
+			next = len;
+		}
+		if (cnt == 0) {
+			data.Type = buffer[pos];
+		}
+		else if (cnt == 1) {
+			data.Sender = buffer.substr(pos, next - pos);
+		}
+		else if (cnt == 2) {
+			data.Receiver = buffer.substr(pos, next - pos);
+		}
+		else if (cnt == 3) {
+			data.Msg = buffer.substr(pos, next - pos);
+		}
+		else if (cnt == 4) {
+			data.res = buffer[pos] == '1';
+		}
+		pos = next + 1;
+		cnt++;
+	}
+}
+
+
+
+// string转wstring
+wstring StringToWstring(const string& str)
+{
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+	return converter.from_bytes(str);
+}
+// wstring转string 
+string WstringToString(const wstring& wstr)
+{
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+	return converter.to_bytes(wstr);
+}
+
+
 
 /*
 将string类型转化为wchar_t*方法

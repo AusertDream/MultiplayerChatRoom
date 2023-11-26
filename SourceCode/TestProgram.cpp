@@ -12,7 +12,7 @@ void Test() {
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2) {
-		MessageBox(NULL, L"通信版本非2.2", L"Error", MB_OK);
+		MessageBox(NULL, "通信版本非2.2", "Error", MB_OK);
 		//清理版本信息
 		WSACleanup();
 		return;
@@ -23,7 +23,7 @@ void Test() {
 	if (SOCKET_ERROR == sSocket) {
 		//如果创建失败输出报错信息
 	
-		MessageBox(NULL, L"创建socket失败", L"Error", MB_OK);
+		MessageBox(NULL, "创建socket失败", "Error", MB_OK);
 		return;
 	}
 	//3.确定服务器的协议地址簇
@@ -39,7 +39,7 @@ void Test() {
 
 		closesocket(sSocket); //断开链接
 		WSACleanup(); //清理协议版本信息
-		MessageBox(NULL, L"连接失败", L"Error", MB_OK);
+		MessageBox(NULL, "连接失败", "Error", MB_OK);
 		return;
 	}
 
