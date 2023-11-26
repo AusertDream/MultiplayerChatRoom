@@ -85,7 +85,7 @@ void OnSend(SOCKET cSocket, UserParam receivedData) {
 	SendData.Type = NORMAL_MSG;
 	SendData.Msg = receivedData.Msg;
 	SendData.Sender = L"Server";
-	SendData.Receiver = L"ALL";
+	SendData.Receiver = receivedData.Receiver;
 	//将结构体序列化为字符数组，然后使用send发送出去
 	wstring buffer;
 	buffer.push_back(SendData.Type);
@@ -186,7 +186,8 @@ void SendRecvProc(SOCKET cSocket) {
 void StartServer() {
 	//初始化
 	SOCKET sSocket = InitServer();
-	UserList.insert(L"ALL");
+	UserList.insert(L"GLOBAL");
+	UserList.insert(L"CN");
 	UserList.insert(L"Server");
 	//创建多线程处理收发消息
 	for (int i = 0; i < MAX_NUMBER; i++) {

@@ -28,7 +28,6 @@ typedef struct UserParam
     wstring Receiver;
     wstring Msg;
     bool res;
-    
 };
 
 

@@ -9,13 +9,13 @@
 using namespace std;
 
 HANDLE hStdOutput = 0; //添加DOS控制台窗口用于DEBUG
-string username; //当前用户的用户名
+wstring username; //当前用户的用户名
 //#define WM_MYMSG WM_USER+1011 自定义消息类型
 HINSTANCE hIns ; //当前程序实例句柄
 
 //所有窗口的句柄
 HWND hMainWindow, hSubMainWindow, hLoginInput, hLoginButton, hTextInput, hUserList, hSendButton, hToolBar, hTextShowWindow;
-HWND hTextAlias, hStartServer;
+HWND hTextAlias, hStartServer,hSubMainWindow2;
 
 SOCKET sendSocket; //用户发送的socket
 SOCKET recvSocket; //用户接受的socket
@@ -29,6 +29,7 @@ HWND CreateLoginButton(HINSTANCE hIns); //创建登录按钮
 HWND CreateTextAlias(HINSTANCE hIns);//创建昵称提示文字
 HWND CreateStartServer(HINSTANCE hIns);//创建启动服务器的按钮
 //聊天室界面
+HWND CreateSubMainWindow2(HINSTANCE hIns); //创建子主窗口2
 HWND CreateTextInput(HINSTANCE hIns); //创建输入框
 HWND CreateUserList(HINSTANCE hIns); //创建用户列表
 HWND CreateSendButton(HINSTANCE hIns); //创建发送按钮
@@ -37,11 +38,12 @@ HWND CreateTextShowWindow(HINSTANCE hIns); //创建聊天记录显示框
 
 LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam);//主窗口处理函数，处理消息。
 LRESULT CALLBACK SubMainWindowProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam);//子窗口的处理函数
+LRESULT CALLBACK SubMainWindow2Proc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam);//子窗口2的处理函数
 SOCKET StartClient(); //启动socket服务的函数
 void thRecv(SOCKET); //接受消息的线程函数
 void func(); //用于测试的函数
 void OnCommand(WPARAM wParam); //处理菜单被点击的操作
-
+string CurrentTarget = "GLOBAL"; //当前聊天对象
 
 
 
@@ -69,7 +71,7 @@ int WINAPI WinMain(
 	hLoginButton = CreateLoginButton(hIns); //创建登录按钮
 	hTextAlias = CreateTextAlias(hIns);//创建昵称提示文本
 	hStartServer = CreateStartServer(hIns);//创建启动服务器的按钮
-	
+	hSubMainWindow2 = CreateSubMainWindow2(hIns); //创建子主窗口2
 	hTextInput = CreateTextInput(hIns); //创建输入框
 	hUserList = CreateUserList(hIns); //创建用户列表
 	hSendButton = CreateSendButton(hIns); //创建发送按钮
@@ -177,14 +179,14 @@ void thRecv(SOCKET sSocket)
 		if (recvBuffer.Type == NORMAL_MSG) {
 			//如果是普通消息
 			//将消息显示在聊天记录框中
-			/*wstring text = recvBuffer.Msg.UserName + L" ";
-			text.append(recvBuffer.Msg.timeInfo.Format(L"%Y-%m-%d %H:%M:%S") + L"\r\n");
-			for (int i = 0; i < recvBuffer.Msg.Msg.size(); i++) {
-				text.append(recvBuffer.Msg.Msg[i]);
-				text.append(L"\r\n");
+			//检查自己是否是接收方
+			if (recvBuffer.Receiver == username || recvBuffer.Receiver == L"GLOBAL" || recvBuffer.Receiver == L"CN") {
+				//格式化消息内容显示方式
+				wstring text = recvBuffer.Sender + L" " + L"> "+recvBuffer.Msg;
+				text += L"\r\n";
+				SendMessage(hTextShowWindow, EM_SETSEL, -1, -1); // 将光标移动到文本末尾
+				SendMessage(hTextShowWindow, EM_REPLACESEL, 0, (LPARAM)text.c_str()); //将消息内容发送过去
 			}
-			text += L"\r\n";
-			SendMessage(hTextShowWindow, EM_REPLACESEL, 0, (LPARAM)text.c_str());*/
 		}
 		else if (recvBuffer.Type == LOGIN_RESULT) {
 			//如果是登录结果
@@ -198,6 +200,7 @@ void thRecv(SOCKET sSocket)
 				//DestroyWindow(hSubMainWindow);
 				PostMessage(hSubMainWindow, WM_CLOSE, NULL, NULL); //向子窗口发送关闭消息
 				SetWindowPos(hMainWindow, NULL, 350, 250, 1000, 700, SWP_NOZORDER); //设置主窗口的大小
+				ShowWindow(hSubMainWindow2, SW_SHOW);
 				PostMessage(hMainWindow, WM_SUCCESSLOGIN, NULL, NULL); //向mainWindow发送成功登录的消息
 				MessageBox(hMainWindow, "登录成功", "通知", MB_OK);
 			}
@@ -219,8 +222,39 @@ void func() {
 void OnCommand(WPARAM wParam) {
 	//LOWORD获取点击的菜单的ID
 	switch (LOWORD(wParam)) {
+	case BUTTONSENDMESSAGE:
+	{
+		//当点击发送按钮的时候
+		//获取输入框的内容
+		WCHAR buffer[MAX_BUFFER_SIZE];
+		GetWindowTextW(hTextInput, buffer, MAX_BUFFER_SIZE);
+
+		//将内容转换为string
+		USES_CONVERSION;
+		string msg;
+		msg.assign(W2A(buffer));
+		if (msg.size() == 0) {
+			MessageBox(hMainWindow, "请不要发送空消息", "Oops", MB_OK);
+			break;
+		}
+		//将内容发送出去
+		string sendbuff;
+		sendbuff.append("NORMAL_MSG");
+		sendbuff.push_back(' ');
+		string str(W2A(username.c_str())); //将宽字节的用户名转化为char
+		sendbuff+=str;
+		sendbuff.push_back(' ');
+		sendbuff+=CurrentTarget;
+		sendbuff.push_back(' ');
+		sendbuff += msg;
+		sendbuff.push_back('\0');
+		send(sendSocket,msg.c_str(), msg.size(), NULL);
+		SetWindowText(hTextInput, "");
+		break;
+	}
 	case ID_CN:
 		//当点击中国区域的聊天室的时候
+		CurrentTarget = "CN";
 		//模式对话框，程序会阻塞在这里
 		DialogBox(NULL, (LPCSTR)IDD_DIALOG1, NULL, DefWindowProc);
 		//无模式对话框，不会发生阻塞。但是想要显示还需要使用showwindow函数。然而实际上还是阻塞（（（存疑
@@ -231,7 +265,7 @@ void OnCommand(WPARAM wParam) {
 		break;
 	case ID_GLOBAL:
 		//当点击全球聊天室的时候
-
+		CurrentTarget="GLOBAL";
 
 		break;
 	case BUTTONLOGIN:
@@ -253,9 +287,8 @@ void OnCommand(WPARAM wParam) {
 			}
 		}
 
-		//将用户名转换为string
-		USES_CONVERSION;	
-		username.assign(W2A(buffer));
+		//将用户名保存
+		username.assign(buffer);
 
 		if (username.size() == 0) {
 			MessageBox(hMainWindow, "请不要输入空昵称", "Oops", MB_OK);
@@ -270,7 +303,9 @@ void OnCommand(WPARAM wParam) {
 			string buffer;
 			buffer.push_back(LOGIN_REQUEST);
 			buffer.push_back(' ');
-			buffer.append(username);
+			USES_CONVERSION;
+			string str(W2A(username.c_str()));
+			buffer+=str;
 			buffer.push_back(' ');
 			buffer.append("Server");
 			buffer.push_back('\0');
@@ -304,6 +339,13 @@ LRESULT CALLBACK SubMainWindowProc(
 	LPARAM LParam //消息参数2
 ) {
 	switch (msgID) {
+	case WM_KEYDOWN:
+		//如果按下的是回车键，相当于按了登录按钮。
+		if (wParam == VK_RETURN) {
+			SetFocus(hLoginInput);
+			PostMessage(hLoginInput, WM_COMMAND, MAKEWPARAM(BUTTONLOGIN,NULL), NULL);
+		}
+		break;
 	case WM_COMMAND: //处理菜单被点击的操作
 		OnCommand(wParam);
 		break;
@@ -323,6 +365,16 @@ LRESULT CALLBACK SubMainWindowProc(
 		DeleteObject(hFont);
 		//结束绘制
 		EndPaint(hWnd, &ps);
+		break;
+	}
+	return DefWindowProc(hWnd, msgID, wParam, LParam);
+}
+
+LRESULT SubMainWindow2Proc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam)
+{
+	switch (msgID) {
+	case WM_COMMAND: //处理菜单被点击的操作
+		OnCommand(wParam);
 		break;
 	}
 	return DefWindowProc(hWnd, msgID, wParam, LParam);
@@ -430,11 +482,45 @@ HWND CreateSubMainWindow(HINSTANCE hIns)
 		0,
 		"SubMainWindow",
 		NULL,
-		WS_CHILD | WS_VISIBLE,
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 		0,
 		0,
 		500,
 		300,
+		hMainWindow,
+		NULL,
+		hIns,
+		NULL
+	);
+
+	return hSubMainWindowRes;
+}
+
+HWND CreateSubMainWindow2(HINSTANCE hIns)
+{
+	WNDCLASS SubMainWindow = { 0 }; //创建一个窗口类 名字叫SubMainWindow
+	SubMainWindow.cbClsExtra = 0;// 要根据窗口类结构分配的额外字节数，设置需要申请的缓冲区。
+	SubMainWindow.cbWndExtra = 0; //在窗口实例之后分配的额外字节数，设置需要申请的缓冲区。
+	SubMainWindow.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);//设置窗口的背景色，COLOR_WINDOW+1为白色。
+	SubMainWindow.hCursor = NULL;//设置窗口光标，设置为NULL为默认光标。
+	SubMainWindow.hIcon = NULL;//设置窗口图标，NULL为默认图标。
+	SubMainWindow.hInstance = hIns; //当前程序实例句柄
+	SubMainWindow.lpfnWndProc = SubMainWindow2Proc; //设置当前窗口的处理函数，传入处理函数的函数名即可。
+	SubMainWindow.lpszClassName = "SubMainWindow2";//设置窗口类的名字。
+	SubMainWindow.lpszMenuName = NULL; //设置窗口是否有菜单，NULL为没有菜单。
+	SubMainWindow.style = CS_HREDRAW | CS_VREDRAW; //设置窗口风格，CS_HREDRAW和CS_VREDRAW为当窗口水平或者垂直大小变化时，重画窗口
+
+	//注册窗口，向操作系统中写入窗口信息。
+	RegisterClass(&SubMainWindow);
+	HWND hSubMainWindowRes = CreateWindowEx(
+		0,
+		"SubMainWindow2",
+		NULL,
+		WS_CHILD | WS_TABSTOP,
+		0,
+		0,
+		1000,
+		700,
 		hMainWindow,
 		NULL,
 		hIns,
@@ -450,10 +536,10 @@ HWND CreateLoginInput(HINSTANCE hIns)
 {
 
 	HWND hLoginInputRes = CreateWindowEx(
-		0,
+		WS_EX_WINDOWEDGE,
 		"EDIT",
 		NULL,
-		WS_BORDER | WS_CHILD | WS_VISIBLE | ES_LEFT,
+		WS_BORDER | WS_CHILD | WS_VISIBLE | ES_LEFT | WS_TABSTOP,
 		140,
 		100,
 		260,
@@ -490,24 +576,20 @@ HWND CreateLoginButton(HINSTANCE hIns)
 
 HWND CreateTextInput(HINSTANCE hIns)
 {
-	WNDCLASS TextInput = { 0 }; //创建一个窗口类 名字叫TextInput
-	TextInput.cbClsExtra = 0;// 要根据窗口类结构分配的额外字节数，设置需要申请的缓冲区。
-	TextInput.cbWndExtra = 0; //在窗口实例之后分配的额外字节数，设置需要申请的缓冲区。
-	TextInput.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);//设置窗口的背景色，COLOR_WINDOW+1为白色。
-	TextInput.hCursor = NULL;//设置窗口光标，设置为NULL为默认光标。
-	TextInput.hIcon = NULL;//设置窗口图标，NULL为默认图标。
-	TextInput.hInstance = hIns; //当前程序实例句柄
-	TextInput.lpfnWndProc = DefWindowProc; //设置当前窗口的处理函数，传入处理函数的函数名即可。
-	TextInput.lpszClassName = "TextInput";//设置窗口类的名字。
-	TextInput.lpszMenuName = NULL; //设置窗口是否有菜单，NULL为没有菜单。
-	TextInput.style = CS_HREDRAW | CS_VREDRAW; //设置窗口风格，CS_HREDRAW和CS_VREDRAW为当窗口水平或者垂直大小变化时，重画窗口
-
-	//注册窗口，向操作系统中写入窗口信息。
-	RegisterClass(&TextInput);
-
-	HWND hTextInputRes = 0;
-
-
+	HWND hTextInputRes = CreateWindowEx(
+		WS_EX_CLIENTEDGE,
+		"EDIT",
+		"开始聊天吧~",
+		WS_VISIBLE | WS_CHILD | WS_BORDER | ES_AUTOHSCROLL | ES_LEFT,
+		0,
+		500,
+		700,
+		195,
+		hSubMainWindow2,
+		NULL,
+		hIns,
+		NULL
+	);
 	return hTextInputRes;
 }
 
@@ -536,24 +618,21 @@ HWND CreateUserList(HINSTANCE hIns)
 
 HWND CreateSendButton(HINSTANCE hIns)
 {
-	WNDCLASS SendButton = { 0 }; //创建一个窗口类 名字叫SendButton
-	SendButton.cbClsExtra = 0;// 要根据窗口类结构分配的额外字节数，设置需要申请的缓冲区。
-	SendButton.cbWndExtra = 0; //在窗口实例之后分配的额外字节数，设置需要申请的缓冲区。
-	SendButton.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);//设置窗口的背景色，COLOR_WINDOW+1为白色。
-	SendButton.hCursor = NULL;//设置窗口光标，设置为NULL为默认光标。
-	SendButton.hIcon = NULL;//设置窗口图标，NULL为默认图标。
-	SendButton.hInstance = hIns; //当前程序实例句柄
-	SendButton.lpfnWndProc = DefWindowProc; //设置当前窗口的处理函数，传入处理函数的函数名即可。
-	SendButton.lpszClassName = "SendButton";//设置窗口类的名字。
-	SendButton.lpszMenuName = NULL; //设置窗口是否有菜单，NULL为没有菜单。
-	SendButton.style = CS_HREDRAW | CS_VREDRAW; //设置窗口风格，CS_HREDRAW和CS_VREDRAW为当窗口水平或者垂直大小变化时，重画窗口
 
-	//注册窗口，向操作系统中写入窗口信息。
-	RegisterClass(&SendButton);
-
-	HWND hSendButtonRes = 0;
-
-
+	HWND hSendButtonRes = CreateWindowEx(
+		0,//窗口的额外风格设置
+		"BUTTON",//创建的窗口类的名字
+		"发送！",//文本内容
+		WS_VISIBLE | WS_CHILD,//设置窗口的基本风格。
+		700,
+		590,
+		100,
+		50,
+		hSubMainWindow2,//设置父窗口，没有置空NULL
+		(HMENU)BUTTONSENDMESSAGE,//设置菜单，没有菜单为NULL
+		hIns,//当前程序实例句柄
+		NULL//没啥用的参数
+	);
 	return hSendButtonRes;
 }
 
@@ -582,26 +661,21 @@ HWND CreateToolBar(HINSTANCE hIns)
 
 HWND CreateTextShowWindow(HINSTANCE hIns)
 {
-	WNDCLASS TextShowWindow = { 0 }; //创建一个窗口类 名字叫TextShowWindow
-	TextShowWindow.cbClsExtra = 0;// 要根据窗口类结构分配的额外字节数，设置需要申请的缓冲区。
-	TextShowWindow.cbWndExtra = 0; //在窗口实例之后分配的额外字节数，设置需要申请的缓冲区。
-	TextShowWindow.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);//设置窗口的背景色，COLOR_WINDOW+1为白色。
-	TextShowWindow.hCursor = NULL;//设置窗口光标，设置为NULL为默认光标。
-	TextShowWindow.hIcon = NULL;//设置窗口图标，NULL为默认图标。
-	TextShowWindow.hInstance = hIns; //当前程序实例句柄
-	TextShowWindow.lpfnWndProc = DefWindowProc; //设置当前窗口的处理函数，传入处理函数的函数名即可。
-	TextShowWindow.lpszClassName = "TextShowWindow";//设置窗口类的名字。
-	TextShowWindow.lpszMenuName = NULL; //设置窗口是否有菜单，NULL为没有菜单。
-	TextShowWindow.style = CS_HREDRAW | CS_VREDRAW; //设置窗口风格，CS_HREDRAW和CS_VREDRAW为当窗口水平或者垂直大小变化时，重画窗口
-
-	//注册窗口，向操作系统中写入窗口信息。
-	RegisterClass(&TextShowWindow);
-
-
-	HWND hTextShowWindowRes = 0;
-
-
-
+	//创建消息显示框
+	HWND hTextShowWindowRes = CreateWindowEx(
+		WS_EX_CLIENTEDGE,  //额外的窗口扩展风格
+		"EDIT",  //窗口类名
+		NULL,  //窗口名字
+		//设置为只读模式，多行模式，自动换行模式，可见模式，有垂直滚动条
+		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY,
+		0,
+		0, 
+		700, 
+		500, 
+		hSubMainWindow2, //父窗口是子窗口2
+		NULL, 
+		hIns,
+		NULL);
 	return hTextShowWindowRes;
 }
 
