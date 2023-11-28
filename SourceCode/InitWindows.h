@@ -6,9 +6,11 @@ using namespace std;
 
 extern HANDLE hStdOutput; //添加DOS控制台窗口用于DEBUG
 #define WM_SUCCESSLOGIN WM_USER+1011  //成功登录的消息
+#define WM_UPDATETEXTSHOWWINDOW WM_USER+1012 //更新聊天记录的消息
 #define BUTTONLOGIN   1 
-#define BUTTONSERVER   2 
+#define BUTTONTEST   2 
 #define BUTTONSENDMESSAGE 3
+#define USERLIST 4
 //所有的窗口句柄
 extern HWND hMainWindow, hSubMainWindow, hLoginInput, hLoginButton, hTextInput, hUserList, hSendButton, hToolBar, hTextShowWindow;
 extern HWND hTextAlias, hStartServer;

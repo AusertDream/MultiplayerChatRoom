@@ -56,9 +56,6 @@
     <ClCompile Include="Server.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Client.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="TestProgram.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

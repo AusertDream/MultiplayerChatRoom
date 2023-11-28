@@ -84,9 +84,9 @@ void OnSend(SOCKET cSocket, UserParam receivedData) {
 	UserParam SendData;
 	SendData.Type = NORMAL_MSG;
 	SendData.Msg = receivedData.Msg;
-	SendData.Sender = L"Server";
+	SendData.Sender = receivedData.Sender;
 	SendData.Receiver = receivedData.Receiver;
-	//将结构体序列化为字符数组，然后使用send发送出去
+	//将结构体化为字符数组，然后使用send发送出去
 	wstring buffer;
 	buffer.push_back(SendData.Type);
 	buffer.push_back(L' ');
@@ -95,7 +95,10 @@ void OnSend(SOCKET cSocket, UserParam receivedData) {
 	buffer.append(SendData.Receiver);
 	buffer.push_back(L' ');
 	buffer.append(SendData.Msg);
-	string s=WstringToString(buffer);
+	buffer.push_back(L'\0');
+	USES_CONVERSION;
+	string s(W2A(buffer.c_str()));
+	s.push_back('\0');
 	//发送给所有客户端
 	for (int i = 0; i < MAX_NUMBER; i++) {
 		send(allSocket[i], s.c_str(), s.size(), NULL);
@@ -163,7 +166,10 @@ void SendRecvProc(SOCKET cSocket) {
 		//将接受到的数据解包，分析。
 		UserParam receivedData;
 		openTheBuff(buffer, receivedData);
-		
+		if (receivedData.Type == NORMAL_MSG)
+		{
+			Sleep(100);
+		}
 		//如果接收到的数据类型不是登录请求或者登出请求或者普通消息则不处理
 		if (recvBuff[0] != LOGIN_REQUEST && recvBuff[0] != LOGOUT_REQUEST&& recvBuff[0]!= NORMAL_MSG&& recvBuff[0]!= LOGIN_RESULT) {
 			continue;

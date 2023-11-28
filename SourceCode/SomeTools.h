@@ -9,14 +9,20 @@ typedef long long ll;
 #define LOGIN_REQUEST  '2'
 #define LOGOUT_REQUEST '3'
 #define LOGIN_RESULT '4'
-
+#define LOGOUT_RESULT 'b'
+#define GLOBALRECORD_REQUEST '5'
+#define GLOBALRECORD_RESULT '6'
+#define CNRECORD_REQUEST '7'
+#define CNRECORD_RESULT '8'
+#define USERLIST_REQUEST '9'
+#define USERLIST_RESULT 'a'
+#define NEWUSERLOGIN 'c'
 template<typename T> //使用函数模板的MyRandom函数
 T MyRandom(T min, T max);
 
 typedef struct UserMessage {
     wstring UserName;
     vector<wstring> Msg;
-    CTime timeInfo;
 };
 
 

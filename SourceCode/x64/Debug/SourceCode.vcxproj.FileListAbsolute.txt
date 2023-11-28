@@ -1,1 +1,1 @@
-E:\快捷方式包\大学作品\课设\OS课设\MultiplayerChatRoom\SourceCode\x64\Debug\SourceCode.exe
+E:\快捷方式包\大学作品\课设\OS课设\MultiplayerChatRoom\SourceCode\x64\Debug\ClientCode.exe

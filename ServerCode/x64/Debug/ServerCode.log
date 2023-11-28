@@ -1,0 +1,15 @@
+﻿  ServerCode.cpp
+E:\快捷方式包\大学作品\课设\OS课设\MultiplayerChatRoom\ServerCode\SomeTools.h(28,2): warning C4091: “typedef ”: 没有声明变量时忽略“UserMessage”的左侧
+  (编译源文件“ServerCode.cpp”)
+  
+E:\快捷方式包\大学作品\课设\OS课设\MultiplayerChatRoom\ServerCode\SomeTools.h(39,2): warning C4091: “typedef ”: 没有声明变量时忽略“UserParam”的左侧
+  (编译源文件“ServerCode.cpp”)
+  
+E:\快捷方式包\大学作品\课设\OS课设\MultiplayerChatRoom\ServerCode\ServerCode.cpp(151,39): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+E:\快捷方式包\大学作品\课设\OS课设\MultiplayerChatRoom\ServerCode\ServerCode.cpp(166,20): warning C4066: 宽字符常量的第一个字符之外的字符被忽略
+E:\快捷方式包\大学作品\课设\OS课设\MultiplayerChatRoom\ServerCode\ServerCode.cpp(169,34): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+E:\快捷方式包\大学作品\课设\OS课设\MultiplayerChatRoom\ServerCode\ServerCode.cpp(183,20): warning C4066: 宽字符常量的第一个字符之外的字符被忽略
+E:\快捷方式包\大学作品\课设\OS课设\MultiplayerChatRoom\ServerCode\ServerCode.cpp(186,34): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+E:\快捷方式包\大学作品\课设\OS课设\MultiplayerChatRoom\ServerCode\ServerCode.cpp(198,40): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+E:\快捷方式包\大学作品\课设\OS课设\MultiplayerChatRoom\ServerCode\ServerCode.cpp(218,49): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+  ServerCode.vcxproj -> E:\快捷方式包\大学作品\课设\OS课设\MultiplayerChatRoom\SourceCode\x64\Debug\ServerCode.exe
