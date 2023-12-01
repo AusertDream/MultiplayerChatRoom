@@ -38,31 +38,36 @@ void deserialize(const char* buffer, UserParam& data) {
 
 //解包函数
 void openTheBuff(wstring buffer, UserParam& data) {
-	int pos = 0;
-	int len = buffer.length();
 	int cnt = 0;
-	while (pos < len) {
-		int next = buffer.find(L" ", pos);
-		if (next == -1) {
-			next = len;
+	for (int l = 0; l < buffer.size(); l++) {
+		int r = l + 1;
+		while (r < buffer.size() && buffer[r] != L' ') {
+			r++;
 		}
 		if (cnt == 0) {
-			data.Type = buffer[pos];
+			data.Type = (char)buffer[l];//将数据类型存入type
 		}
 		else if (cnt == 1) {
-			data.Sender = buffer.substr(pos, next - pos);
+			data.Sender = buffer.substr(l, r - l);//将发送者存入sender
 		}
 		else if (cnt == 2) {
-			data.Receiver = buffer.substr(pos, next - pos);
+			data.Receiver = buffer.substr(l, r - l);
 		}
 		else if (cnt == 3) {
-			data.Msg = buffer.substr(pos, next - pos);
+			if (data.Type == LOGIN_RESULT) {
+				if (buffer.substr(l, r - l) == L"true") {
+					data.res = true;
+				}
+				else {
+					data.res = false;
+				}
+			}
+			else {
+				data.Msg = buffer.substr(l, r - l);
+			}
 		}
-		else if (cnt == 4) {
-			data.res = buffer[pos] == '1';
-		}
-		pos = next + 1;
 		cnt++;
+		l = r;
 	}
 }
 

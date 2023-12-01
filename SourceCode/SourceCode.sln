@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SourceCode", "SourceCode.vcxproj", "{AAE36182-FC88-44CA-9DC9-72155CFB1382}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ClientCode", "SourceCode.vcxproj", "{AAE36182-FC88-44CA-9DC9-72155CFB1382}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerCode", "..\ServerCode\ServerCode.vcxproj", "{2FB5FF06-2320-45E9-A574-C99AD7111298}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "MultiChatRoom_Client_Setup", "..\MultiChatRoom_Setup\MultiChatRoom_Setup.vdproj", "{1F36E46E-6B55-4DF7-B852-3B8EC6B55BB3}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "MultiChatRoom_Server_Setup", "..\MultiChatRoom_Server_Setup\MultiChatRoom_Server_Setup.vdproj", "{C21F2A83-BB99-491B-909C-C3E1C5B4762A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +35,14 @@ Global
 		{2FB5FF06-2320-45E9-A574-C99AD7111298}.Release|x64.Build.0 = Release|x64
 		{2FB5FF06-2320-45E9-A574-C99AD7111298}.Release|x86.ActiveCfg = Release|Win32
 		{2FB5FF06-2320-45E9-A574-C99AD7111298}.Release|x86.Build.0 = Release|Win32
+		{1F36E46E-6B55-4DF7-B852-3B8EC6B55BB3}.Debug|x64.ActiveCfg = Debug
+		{1F36E46E-6B55-4DF7-B852-3B8EC6B55BB3}.Debug|x86.ActiveCfg = Debug
+		{1F36E46E-6B55-4DF7-B852-3B8EC6B55BB3}.Release|x64.ActiveCfg = Release
+		{1F36E46E-6B55-4DF7-B852-3B8EC6B55BB3}.Release|x86.ActiveCfg = Release
+		{C21F2A83-BB99-491B-909C-C3E1C5B4762A}.Debug|x64.ActiveCfg = Debug
+		{C21F2A83-BB99-491B-909C-C3E1C5B4762A}.Debug|x86.ActiveCfg = Debug
+		{C21F2A83-BB99-491B-909C-C3E1C5B4762A}.Release|x64.ActiveCfg = Release
+		{C21F2A83-BB99-491B-909C-C3E1C5B4762A}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

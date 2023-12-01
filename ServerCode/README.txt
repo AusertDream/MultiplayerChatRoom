@@ -1,0 +1,3 @@
+msi文件安装完成之后
+打开ClientCode.exe即为运行客户端程序
+打开ServerCode.exe即为运行服务器程序

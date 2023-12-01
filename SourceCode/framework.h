@@ -35,6 +35,7 @@
 #include <locale>
 #include <codecvt>
 #include <richedit.h> // 需要包含 richedit.h 头文件
+#include <CommCtrl.h>
 
 
 

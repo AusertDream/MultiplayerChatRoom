@@ -11,6 +11,8 @@ extern HANDLE hStdOutput; //添加DOS控制台窗口用于DEBUG
 #define BUTTONTEST   2 
 #define BUTTONSENDMESSAGE 3
 #define USERLIST 4
+#define TOOLBAR 5
+#define KAOMOJI 6
 //所有的窗口句柄
 extern HWND hMainWindow, hSubMainWindow, hLoginInput, hLoginButton, hTextInput, hUserList, hSendButton, hToolBar, hTextShowWindow;
 extern HWND hTextAlias, hStartServer;

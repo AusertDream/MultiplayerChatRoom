@@ -33,20 +33,23 @@ HWND CreateSubMainWindow2(HINSTANCE hIns); //创建子主窗口2
 HWND CreateTextInput(HINSTANCE hIns); //创建输入框
 HWND CreateUserList(HINSTANCE hIns); //创建用户列表
 HWND CreateSendButton(HINSTANCE hIns); //创建发送按钮
-HWND CreateToolBar(HINSTANCE hIns); //创建工具栏
+HWND CreateToolBar(HINSTANCE hIns); //创建发送表情的按钮
 HWND CreateTextShowWindow(HINSTANCE hIns); //创建聊天记录显示框
 
 LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam);//主窗口处理函数，处理消息。
 LRESULT CALLBACK SubMainWindowProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam);//子窗口的处理函数
 LRESULT CALLBACK SubMainWindow2Proc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam);//子窗口2的处理函数
+LRESULT CALLBACK DlgProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam);//表情窗口的处理函数
 SOCKET StartClient(bool&); //启动socket服务的函数
 void thRecv(SOCKET); //接受消息的线程函数
 void func(); //用于测试的函数
 void OnCommand(WPARAM wParam); //处理菜单被点击的操作
 string CurrentTarget = "GLOBAL"; //当前聊天对象
 
-bool isSocketStart = false; //socket是否启动
 
+mutex ProtectProcQueue; //保护ProcQueue的互斥锁
+bool isSocketStart = false; //socket是否启动
+queue<UserParam> ProcQueue; //消息处理队列
 
 
 
@@ -76,7 +79,7 @@ int WINAPI WinMain(
 	hTextInput = CreateTextInput(hIns); //创建输入框
 	hUserList = CreateUserList(hIns); //创建用户列表
 	hSendButton = CreateSendButton(hIns); //创建发送按钮
-	hToolBar = CreateToolBar(hIns); //创建工具栏
+	//hToolBar = CreateToolBar(hIns); //创建工具栏
 	hTextShowWindow = CreateTextShowWindow(hIns); //创建聊天记录显示框
 	
 	//设置按钮的文字内容
@@ -88,8 +91,9 @@ int WINAPI WinMain(
 	UpdateWindow(hMainWindow);//刷新创建的窗口。
 	//在用户列表里面添加提示语
 	SendMessage(hUserList,LB_ADDSTRING, 0, (LPARAM)"当前用户列表：");
-	//向子窗口发送更新聊天记录的消息
-	PostMessage(hSubMainWindow2, WM_UPDATETEXTSHOWWINDOW, NULL, NULL); 
+	Sleep(100);
+
+	
 	//消息循环
 	MSG nMsg = { 0 }; //消息结构体
 	/*
@@ -105,7 +109,7 @@ int WINAPI WinMain(
 	*/
 
 	
-	while (true) {
+	while (true) {		
 		if (PeekMessage(&nMsg, NULL, 0, 0, PM_NOREMOVE)) {
 			//忙处理
 			if (GetMessage(&nMsg, NULL, 0, 0)) { //如果消息非QUIT消息
@@ -152,37 +156,41 @@ SOCKET StartClient(bool& res) {
 
 	//4. 连接服务器
 	int r = connect(sSocket, (sockaddr*)&addr, sizeof addr);
-	if (r == -1) {
+	if (r < 0) {
+		MessageBox(hMainWindow, "连接服务器失败", "Error", MB_OK);
 		//如果连接失败输出报错信息
 		closesocket(sSocket); //断开链接
-
 		return NULL;
 	}
 	res = true;
+	isSocketStart = true;
 	return sSocket;
 }
 
 void thRecv(SOCKET sSocket)
 {
-	int r;
-	//5.接受消息
-	while (true) {
-		UserParam recvBuffer;
-		char buff[MAX_BUFFER_SIZE];
-		r = recv(sSocket, buff, MAX_BUFFER_SIZE, NULL);
-		//将char转化为wstring类型
+	//消息处理函数
+	auto MsgProc = [&](UserParam recvBuffer) {
 		USES_CONVERSION;
-		wchar_t* wbuff = A2W(buff);
-		wstring wstr(wbuff);
-		//解包wstr
-		openTheBuff(wstr, recvBuffer);
 		if (recvBuffer.Type == NORMAL_MSG) {
 			//如果是普通消息
 			//将消息显示在聊天记录框中
 			//检查自己是否是接收方
-			if (recvBuffer.Receiver == username || recvBuffer.Receiver == L"GLOBAL" || recvBuffer.Receiver == L"CN"||recvBuffer.Receiver==L"ALL") {
+			wstring wstringCurrentTarget(A2W(CurrentTarget.c_str()));
+			if (recvBuffer.Receiver == username || recvBuffer.Receiver == wstringCurrentTarget || recvBuffer.Receiver == L"ALL") {
+				//如果这是一条私聊消息，就提醒他，然后进入对应的显示框内
+				if (recvBuffer.Receiver == username) {
+					//如果是私聊消息
+					//如果当前聊天对象不是发送方，那么就将当前聊天对象设置为发送方
+					if (wstringCurrentTarget != recvBuffer.Sender) {
+						CurrentTarget = W2A(recvBuffer.Sender.c_str());
+						MessageBox(hSubMainWindow2, "您收到了一条私聊消息，已自动切换到对应的聊天窗口", "通知", MB_OK);
+						//发送更新窗口的消息
+						PostMessage(hSubMainWindow2, WM_UPDATETEXTSHOWWINDOW, NULL, NULL);
+					}
+				}
 				//格式化消息内容显示方式
-				wstring text = recvBuffer.Sender + L" " + L"> "+recvBuffer.Msg;
+				wstring text = recvBuffer.Sender + L" " + L"> " + recvBuffer.Msg;
 				text.push_back('\n');
 				char* showmsg = W2A(text.c_str());
 				SendMessage(hTextShowWindow, EM_SETSEL, -1, -1); // 将光标移动到文本末尾
@@ -193,7 +201,9 @@ void thRecv(SOCKET sSocket)
 			//如果是登录结果
 			if (recvBuffer.res == false) {
 				//如果登录失败
-				MessageBox(hMainWindow, "登录失败,可能是昵称重名或者服务器未开启", "Oops", MB_OK);
+				MessageBox(hMainWindow, "登录失败,可能是昵称重名或者聊天室人满了", "Oops", MB_OK);
+				closesocket(SendRecvSocket); //断开链接
+				isSocketStart = false;
 			}
 			else {
 				//如果登录成功
@@ -203,22 +213,105 @@ void thRecv(SOCKET sSocket)
 				SetWindowPos(hMainWindow, NULL, 350, 250, 1000, 700, SWP_NOZORDER); //设置主窗口的大小
 				ShowWindow(hSubMainWindow2, SW_SHOW);
 				PostMessage(hMainWindow, WM_SUCCESSLOGIN, NULL, NULL); //向mainWindow发送成功登录的消息
+				//获取用户列表
+				string buff;
+				buff.push_back(USERLIST_REQUEST);
+				buff.push_back(' ');
+				buff.append(W2A(username.c_str()));
+				buff.push_back(' ');
+				buff.append("Server");
+				buff.push_back(' ');
+				buff.push_back('\0');
+				send(SendRecvSocket, buff.c_str(), buff.size(), NULL);
+				//获取全球聊天室的聊天记录
 				MessageBox(hMainWindow, "登录成功", "通知", MB_OK);
+				PostMessage(hSubMainWindow2, WM_UPDATETEXTSHOWWINDOW, NULL, NULL);
 			}
 		}
 		else if (recvBuffer.Type == LOGOUT_RESULT) {
 			//需要让用户列表中的该用户的用户名消失
 			string DeletedName(W2A(recvBuffer.Msg.c_str()));
 			//去列表中寻找该名字的下标
-			int index = SendMessage(hUserList, LB_FINDSTRINGEXACT, (WPARAM) - 1, (LPARAM)DeletedName.c_str());
+			int index = SendMessage(hUserList, LB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)DeletedName.c_str());
 			//然后删除该下标的名字
-			SendMessage(hUserList,LB_DELETESTRING,index,NULL);
+			SendMessage(hUserList, LB_DELETESTRING, index, NULL);
 		}
 		else if (recvBuffer.Type == NEWUSERLOGIN) {
 			string NewUserName(W2A(recvBuffer.Msg.c_str()));
 			NewUserName.push_back('\0');
 			SendMessage(hUserList, LB_ADDSTRING, 0, (LPARAM)NewUserName.c_str());
 		}
+		else if (recvBuffer.Type == GLOBALRECORD_RESULT) {
+			//如果是全球聊天室的聊天记录
+			//将消息显示在聊天记录框中
+			//格式化消息内容显示方式
+			wstring text = recvBuffer.Sender + L" " + L"> " + recvBuffer.Msg;
+			text.push_back('\n');
+			char* showmsg = W2A(text.c_str());
+			SendMessage(hTextShowWindow, EM_SETSEL, -1, -1); // 将光标移动到文本末尾
+			SendMessage(hTextShowWindow, EM_REPLACESEL, 0, (LPARAM)showmsg); //将消息内容发送过去
+		}
+		else if (recvBuffer.Type == CNRECORD_RESULT) {
+			//如果是中国聊天室的聊天记录
+			//将消息显示在聊天记录框中
+			//格式化消息内容显示方式
+			wstring text = recvBuffer.Sender + L" " + L"> " + recvBuffer.Msg;
+			text.push_back('\n');
+			char* showmsg = W2A(text.c_str());
+			SendMessage(hTextShowWindow, EM_SETSEL, -1, -1); // 将光标移动到文本末尾
+			SendMessage(hTextShowWindow, EM_REPLACESEL, 0, (LPARAM)showmsg); //将消息内容发送过去
+		}
+
+		else if (recvBuffer.Type == USERLIST_RESULT) {
+			//将收到的用户名字添加到用户列表当中去
+			string NewUserName(W2A(recvBuffer.Msg.c_str()));
+			NewUserName.push_back('\0');
+			SendMessage(hUserList, LB_ADDSTRING, 0, (LPARAM)NewUserName.c_str());
+		}
+	};
+	//处理函数
+	auto thProc = [&]() {
+		while (true) {
+			//如果队列不为空，那么就处理队列中的消息
+			/*unique_lock<mutex> lock(ProtectProcQueue);*/
+			if (ProcQueue.size() != 0) {
+				UserParam recvBuffer = ProcQueue.front();
+				ProcQueue.pop();
+				MsgProc(recvBuffer);
+			}
+			else {
+				Sleep(100);
+			}
+			
+		}
+	};
+	//为消息处理函数单独开启一个线程
+	thread th(thProc);
+	th.detach();
+	int r;
+	//5.接受消息
+	while (true) {
+		UserParam recvBuffer;
+		char buff[MAX_BUFFER_SIZE];
+		r = recv(sSocket, buff, MAX_BUFFER_SIZE, NULL);
+		if (r < 0) {
+			//如果接受失败输出报错信息
+		
+			closesocket(SendRecvSocket); //断开链接
+			
+			MessageBox(hMainWindow, "本地socket已经被关闭", "通知", MB_OK);
+			isSocketStart = false;
+			break;
+		}
+		//将char转化为wstring类型
+		USES_CONVERSION;
+		wchar_t* wbuff = A2W(buff);
+		wstring wstr(wbuff);
+		//解包wstr
+		openTheBuff(wstr, recvBuffer);
+		//将解包后的数据放入队列中
+		/*unique_lock<mutex> lock(ProtectProcQueue);*/
+		ProcQueue.push(recvBuffer);
 	}
 }
 
@@ -236,8 +329,18 @@ void func() {
 void OnCommand(WPARAM wParam) {
 	//LOWORD获取点击的菜单的ID
 	switch (LOWORD(wParam)) {
+	case KAOMOJI:
+	{
+		HWND hDial = CreateDialog(hIns, MAKEINTRESOURCE(IDD_DIALOG1), hSubMainWindow2, (DLGPROC)DlgProc);
+		ShowWindow(hDial, SW_SHOW);
+		break;
+	}
 	case BUTTONSENDMESSAGE:
 	{
+		if (isSocketStart == false) {
+			MessageBox(hMainWindow, "socket异常关闭，当前处于离线状态，可能是您已掉线或者服务器异常关闭", "Oops", MB_OK);
+			break;
+		}
 		//当点击发送按钮的时候
 		//获取输入框的内容
 		WCHAR buffer[MAX_BUFFER_SIZE];
@@ -326,7 +429,6 @@ void OnCommand(WPARAM wParam) {
 			buffer.append("Server");
 			buffer.push_back('\0');
 			send(SendRecvSocket, buffer.c_str(),buffer.size(), NULL);
-
 		}
 	break;
 	}
@@ -355,13 +457,6 @@ LRESULT CALLBACK SubMainWindowProc(
 	LPARAM LParam //消息参数2
 ) {
 	switch (msgID) {
-	case WM_KEYDOWN:
-		//如果按下的是回车键，相当于按了登录按钮。
-		if (wParam == VK_RETURN) {
-			SetFocus(hLoginInput);
-			PostMessage(hLoginInput, WM_COMMAND, MAKEWPARAM(BUTTONLOGIN,NULL), NULL);
-		}
-		break;
 	case WM_COMMAND: //处理菜单被点击的操作
 		OnCommand(wParam);
 		break;
@@ -389,6 +484,13 @@ LRESULT CALLBACK SubMainWindowProc(
 LRESULT SubMainWindow2Proc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam)
 {
 	switch (msgID) {
+	case WM_KEYDOWN:
+		//如果按下的是回车键，相当于按了发送按钮。
+		if (wParam == VK_RETURN) {
+			SetFocus(hTextInput);
+			PostMessage(hTextInput, WM_COMMAND, MAKEWPARAM(BUTTONSENDMESSAGE, NULL), NULL);
+		}
+		break;
 	case WM_UPDATETEXTSHOWWINDOW:
 		//将消息显示窗口清空
 		SetWindowText(hTextShowWindow, "");
@@ -422,10 +524,12 @@ LRESULT SubMainWindow2Proc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam)
 			send(SendRecvSocket, buff.c_str(), buff.size(), NULL);
 		}
 		else {
-			string s = "当前聊天用户为："+CurrentTarget;
+			string s = "当前聊天用户为："+CurrentTarget+'\n';
 			SendMessage(hTextShowWindow, EM_REPLACESEL, 0, (LPARAM)s.c_str());
 		}
-
+		//将光标设置为下一行的第一个位置。
+		SendMessage(hTextShowWindow, EM_SETSEL, -1, -1);
+		break;
 	case WM_COMMAND: //处理菜单被点击的操作
 		if (HIWORD(wParam) == LBN_SELCHANGE) {
 			//当点击用户列表的时候,发送的消息就是LBN_SELCHANGE
@@ -477,7 +581,7 @@ LRESULT CALLBACK MainWindowProc(
 )
 {
 	switch (msgID) {
-	case WM_CREATE:
+	case WM_CREATE: //当窗口创建的时候，会发送WM_CREATE消息
 	{
 		
 		break;
@@ -499,22 +603,28 @@ LRESULT CALLBACK MainWindowProc(
 			int mRet = MessageBox(hWnd, "真的要退出吗QAQ", "警告", MB_YESNO);
 			if (mRet == IDYES) {
 				//如果确认，那么什么都不做，交给默认处理函数处理，关闭窗口
-				wstring buffer;
-				buffer.push_back(LOGOUT_REQUEST);
-				buffer.push_back(' ');
-				buffer.append(username);
-				buffer.push_back(' ');
-				buffer.append(L"Server");
-				buffer.push_back(' ');
-				buffer.append(L"确认退出");
-				USES_CONVERSION;
-				string s(W2A(buffer.c_str()));
-				s.push_back('\0');
-				send(SendRecvSocket, s.c_str(), s.size(), NULL);
-				//清理版本信息
-				closesocket(SendRecvSocket);
-				
+				//检查socket是否被关闭了，如果已经关闭，不执行以下操作
+				if (isSocketStart == false) {
 
+				}
+				else {
+					wstring buffer;
+					buffer.push_back(LOGOUT_REQUEST);
+					buffer.push_back(' ');
+					buffer.append(username);
+					buffer.push_back(' ');
+					buffer.append(L"Server");
+					buffer.push_back(' ');
+					buffer.append(L"确认退出");
+					USES_CONVERSION;
+					string s(W2A(buffer.c_str()));
+					s.push_back('\0');
+					send(SendRecvSocket, s.c_str(), s.size(), NULL);
+					//关闭连接
+					
+					closesocket(SendRecvSocket);
+					
+				}
 			}
 			else {
 				//如果否认，那么提前结束函数，阻止默认处理函数关闭窗口
@@ -726,9 +836,9 @@ HWND CreateSendButton(HINSTANCE hIns)
 		"发送！",//文本内容
 		WS_VISIBLE | WS_CHILD,//设置窗口的基本风格。
 		700,
-		590,
-		100,
-		50,
+		575,
+		300,
+		65,
 		hSubMainWindow2,//设置父窗口，没有置空NULL
 		(HMENU)BUTTONSENDMESSAGE,//设置菜单，没有菜单为NULL
 		hIns,//当前程序实例句柄
@@ -738,25 +848,22 @@ HWND CreateSendButton(HINSTANCE hIns)
 }
 
 HWND CreateToolBar(HINSTANCE hIns)
-{
-	WNDCLASS ToolBar = { 0 }; //创建一个窗口类 名字叫ToolBar
-	ToolBar.cbClsExtra = 0;// 要根据窗口类结构分配的额外字节数，设置需要申请的缓冲区。
-	ToolBar.cbWndExtra = 0; //在窗口实例之后分配的额外字节数，设置需要申请的缓冲区。
-	ToolBar.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);//设置窗口的背景色，COLOR_WINDOW+1为白色。
-	ToolBar.hCursor = NULL;//设置窗口光标，设置为NULL为默认光标。
-	ToolBar.hIcon = NULL;//设置窗口图标，NULL为默认图标。
-	ToolBar.hInstance = hIns; //当前程序实例句柄
-	ToolBar.lpfnWndProc = DefWindowProc; //设置当前窗口的处理函数，传入处理函数的函数名即可。
-	ToolBar.lpszClassName = "ToolBar";//设置窗口类的名字。
-	ToolBar.lpszMenuName = NULL; //设置窗口是否有菜单，NULL为没有菜单。
-	ToolBar.style = CS_HREDRAW | CS_VREDRAW; //设置窗口风格，CS_HREDRAW和CS_VREDRAW为当窗口水平或者垂直大小变化时，重画窗口
-
-	//注册窗口，向操作系统中写入窗口信息。
-	RegisterClass(&ToolBar);
-
-	HWND hToolBarRes = 0;
-
-
+{	
+	//工具栏位于用户列表和发送按钮之间
+	HWND hToolBarRes = CreateWindowEx(
+		0,//窗口的额外风格设置
+		"BUTTON",//创建的窗口类的名字
+		"颜文字",//文本内容为空
+		WS_CHILD | WS_VISIBLE ,//设置窗口的基本风格。
+		700,
+		500,
+		300,
+		75,
+		hSubMainWindow2,//父窗口为主窗口
+		(HMENU)KAOMOJI,//设置菜单，没有菜单为NULL
+		hIns,//当前程序实例句柄
+		NULL//没啥用的参数
+		);
 	return hToolBarRes;
 }
 
@@ -822,3 +929,28 @@ HWND CreateStartServer(HINSTANCE hIns) {
 	);
 	return hStartServerRes;
 }
+
+
+LRESULT CALLBACK DlgProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM LParam) {
+	//当点击dialog框中的颜文字的时候，将颜文字发送到输入框中去。
+	switch (msgID) {
+	case IDC_KAOMOJI1:
+		SendMessage(hTextInput, EM_REPLACESEL, NULL, (LPARAM)L"(இдஇ; )");
+		break;
+	case IDC_KAOMOJI2:
+		SendMessage(hTextInput, EM_REPLACESEL, NULL, (LPARAM)L"Σ(っ °Д °;)っ");
+		break;
+	case IDC_KAOMOJI3:
+		SendMessage(hTextInput, EM_REPLACESEL, NULL, (LPARAM)L"( ﾉД`)");
+		break;
+	case IDC_KAOMOJI4:
+		SendMessage(hTextInput, EM_REPLACESEL, NULL, (LPARAM)L"(´-ωก`)");
+		break;
+	case IDC_KAOMOJI5:
+		SendMessage(hTextInput, EM_REPLACESEL, NULL, (LPARAM)L"๑•́₃•̀๑");
+		break;
+	}
+	return DefWindowProc(hWnd, msgID, wParam, LParam);
+}
+
+

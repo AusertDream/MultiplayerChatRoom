@@ -153,8 +153,10 @@
     <ResourceCompile Include="UserList.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="bitmap1.bmp" />
     <Image Include="small.ico" />
     <Image Include="SourceCode.ico" />
+    <Image Include="笑脸.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
