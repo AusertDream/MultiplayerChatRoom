@@ -2,6 +2,5 @@ msi文件安装完成之后
 
 ClientCode文件夹为代码源文件
 你可以直接进去打开exe文件运行
-也可以直接使用外面的shotcut快捷方式
 
 ServerCode同理

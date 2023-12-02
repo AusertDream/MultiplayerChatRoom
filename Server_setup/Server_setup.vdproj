@@ -15,13 +15,25 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_036BC0D39194865CD1A51EBBB4BB4F45"
+        "OwnerKey" = "8:_3D725973C4FB43FE996289028D6078C3"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_082C7433F7A44826B159280D70817477"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_66B0F6E6C2CC482BB1F0079DB8A86739"
+        "MsmKey" = "8:_1001C2001E2DFFCB3FACC2A5F02CB775"
+        "OwnerKey" = "8:_3D725973C4FB43FE996289028D6078C3"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3D725973C4FB43FE996289028D6078C3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -45,7 +57,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_8E2638A61A2045AB83311333EC77BBF2"
+        "MsmKey" = "8:_9DF5B847A682460BAC41B4FA6F629EEE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -57,8 +69,20 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_DB1869FD5341E48FF5BC812668DAD42D"
+        "OwnerKey" = "8:_3D725973C4FB43FE996289028D6078C3"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_DB1E348FC31E40BFBA7F4B7BF0FCDAFD"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FC63A22D096BF8F5930C30563C4327C8"
+        "OwnerKey" = "8:_3D725973C4FB43FE996289028D6078C3"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -85,6 +109,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -101,6 +133,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
     }
     "Deployable"
@@ -122,6 +162,26 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_036BC0D39194865CD1A51EBBB4BB4F45"
+            {
+            "SourcePath" = "8:ucrtbased.dll"
+            "TargetName" = "8:ucrtbased.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_32A67AC41B844E8BADD8589B38FAD215"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_082C7433F7A44826B159280D70817477"
             {
             "SourcePath" = "8:..\\ServerCode\\framework.h"
@@ -142,10 +202,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_66B0F6E6C2CC482BB1F0079DB8A86739"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1001C2001E2DFFCB3FACC2A5F02CB775"
             {
-            "SourcePath" = "8:..\\ServerCode\\README.txt"
-            "TargetName" = "8:README.txt"
+            "SourcePath" = "8:MSVCP140D.dll"
+            "TargetName" = "8:MSVCP140D.dll"
             "Tag" = "8:"
             "Folder" = "8:_32A67AC41B844E8BADD8589B38FAD215"
             "Condition" = "8:"
@@ -159,7 +219,7 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_74860611B764457AA8AFD665E09BA7B1"
@@ -222,7 +282,7 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8E2638A61A2045AB83311333EC77BBF2"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9DF5B847A682460BAC41B4FA6F629EEE"
             {
             "SourcePath" = "8:..\\ServerCode\\README.txt"
             "TargetName" = "8:README.txt"
@@ -262,6 +322,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DB1869FD5341E48FF5BC812668DAD42D"
+            {
+            "SourcePath" = "8:VCRUNTIME140D.dll"
+            "TargetName" = "8:VCRUNTIME140D.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_32A67AC41B844E8BADD8589B38FAD215"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DB1E348FC31E40BFBA7F4B7BF0FCDAFD"
             {
             "SourcePath" = "8:..\\ServerCode\\ServerCode.cpp"
@@ -280,6 +360,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FC63A22D096BF8F5930C30563C4327C8"
+            {
+            "SourcePath" = "8:VCRUNTIME140_1D.dll"
+            "TargetName" = "8:VCRUNTIME140_1D.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_32A67AC41B844E8BADD8589B38FAD215"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FEB8C3D0A8454B568428469F2A6121CF"
@@ -501,20 +601,6 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_D5EB3A78399F46EFA8DE479BD7001D42"
-            {
-            "Name" = "8:Server"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_32A67AC41B844E8BADD8589B38FAD215"
-            "Folder" = "8:_8F040254E5134C14AE4A01B767B9DCED"
-            "WorkingFolder" = "8:_8F040254E5134C14AE4A01B767B9DCED"
-            "Icon" = "8:"
-            "Feature" = "8:"
-            }
         }
         "UserInterface"
         {
@@ -914,6 +1000,34 @@
         }
         "ProjectOutput"
         {
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3D725973C4FB43FE996289028D6078C3"
+            {
+            "SourcePath" = "8:..\\SourceCode\\x64\\Debug\\ServerCode.exe"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_32A67AC41B844E8BADD8589B38FAD215"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{2FB5FF06-2320-45E9-A574-C99AD7111298}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
         }
     }
 }

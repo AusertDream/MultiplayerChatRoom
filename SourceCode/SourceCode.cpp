@@ -445,7 +445,7 @@ void OnCommand(WPARAM wParam) {
 		}
 		thread thTestProgram(StartTestProgram,MAX_TEST_NUMBER);
 		thTestProgram.detach();
-		MessageBox(hMainWindow, "测试程序启动成功", "通知", MB_OK);
+		MessageBox(hMainWindow, "测试程序启动成功。\n如果此时服务端没有启动，测试程序大概率会寄", "通知", MB_OK);
 		isStart = true;
 		break;
 	}
