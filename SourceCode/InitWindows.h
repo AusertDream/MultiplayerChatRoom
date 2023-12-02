@@ -13,6 +13,9 @@ extern HANDLE hStdOutput; //添加DOS控制台窗口用于DEBUG
 #define USERLIST 4
 #define TOOLBAR 5
 #define KAOMOJI 6
+#define MAX_NUMBER  101
+#define MAX_BUFFER_SIZE 1024
+#define MAX_TEST_NUMBER 10
 //所有的窗口句柄
 extern HWND hMainWindow, hSubMainWindow, hLoginInput, hLoginButton, hTextInput, hUserList, hSendButton, hToolBar, hTextShowWindow;
 extern HWND hTextAlias, hStartServer;

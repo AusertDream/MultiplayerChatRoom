@@ -33,12 +33,6 @@
     <ClInclude Include="resource1.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Client.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Server.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="SomeTools.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -51,9 +45,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="SomeTools.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Server.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="TestProgram.cpp">

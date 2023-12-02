@@ -131,19 +131,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="InitWindows.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="resource1.h" />
-    <ClInclude Include="Server.h" />
     <ClInclude Include="SomeTools.h" />
     <ClInclude Include="SourceCode.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestProgram.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Server.cpp" />
     <ClCompile Include="SomeTools.cpp" />
     <ClCompile Include="SourceCode.cpp" />
     <ClCompile Include="TestProgram.cpp" />

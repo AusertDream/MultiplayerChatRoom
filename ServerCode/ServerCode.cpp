@@ -36,6 +36,7 @@ vector<UserMessage> ChatRecordCN;
 bool isStart = false; //用来表示服务端是否启动
 int OnLineUserCnt = 0; //用来表示当前在线用户数
 
+mutex ProtectCoutContorl; //为了格式化输出整齐点而设置的锁
 mutex ProtectOnLineUserCnt; //用来保护OnLineUserCnt的互斥锁
 mutex ProtectallSocket; //用来保护所有socket数组的互斥锁
 mutex ProtectUserList; //用来保护UserList的互斥锁
@@ -466,57 +467,60 @@ void SendRecvProc() {
 	//消息处理函数
 	auto MsgProc = [&](SOCKET cSocket, UserParam receivedData) {
 		USES_CONVERSION;
+		string HintMsg;
 		//输出提示信息
-		cout << "接收到用户信息：";
+		HintMsg.append("接收到用户信息：");
 		switch (receivedData.Type)
 		{
 		case NORMAL_MSG:
-			cout << "普通消息 ";
+			HintMsg.append("普通消息 ");
 			break;
 		case LOGIN_REQUEST:
-			cout << "登录请求 ";
+			HintMsg.append("登录请求 ");
 			break;
 		case LOGOUT_REQUEST:
-			cout << "登出请求 ";
+			HintMsg.append("登出请求 ");
 			break;
 		case USERLIST_REQUEST:
-			cout << "用户列表请求 ";
+			HintMsg.append("用户列表请求 ");
 			break;
 		case LOGIN_RESULT:
-			cout << "登录结果 ";
+			HintMsg.append("登录结果 ");
 			break;
 		case LOGOUT_RESULT:
-			cout << "登出结果 ";
+			HintMsg.append("登出结果 ");
 			break;
 		case NEWUSERLOGIN:
-			cout << "新用户登录信息 ";
+			HintMsg.append("新用户登录信息 ");
 			break;
 		case GLOBALRECORD_REQUEST:
-			cout << "全球聊天室聊天记录请求 ";
+			HintMsg.append("全球聊天室聊天记录请求 ");
 			break;
 		case GLOBALRECORD_RESULT:
-			cout << "全球聊天室聊天记录结果 ";
+			HintMsg.append("全球聊天室聊天记录结果 ");
 			break;
 		case CNRECORD_REQUEST:
-			cout << "中国聊天室聊天记录请求 ";
+			HintMsg.append("中国聊天室聊天记录请求 ");
 			break;
 		case CNRECORD_RESULT:
-			cout << "中国聊天室聊天记录结果 ";
+			HintMsg.append("中国聊天室聊天记录结果 ");
 			break;
 		case USERLIST_RESULT:
-			cout << "用户列表结果 ";
+			HintMsg.append("用户列表结果 ");
 			break;
 		default:
-			cout << "未知消息类型 ";
+			HintMsg.append("未知消息类型 ");
 			break;
 		}
-		cout << "发送者：";
-		cout << string(W2A(receivedData.Sender.c_str())) << ' ';
-		cout << "接收者：";
-		cout << string(W2A(receivedData.Receiver.c_str())) << ' ';
-		cout << " 消息内容: ";
-		cout << string(W2A(receivedData.Msg.c_str())) << " ";
-		cout << endl;
+		HintMsg.append("发送者：");
+		HintMsg.append(string(W2A(receivedData.Sender.c_str())));
+		HintMsg.push_back(' ');
+		HintMsg.append("接收者：");
+		HintMsg.append(string(W2A(receivedData.Receiver.c_str())));
+		HintMsg.push_back(' ');
+		HintMsg.append("消息内容：");
+		HintMsg.append(string(W2A(receivedData.Msg.c_str())));
+		HintMsg.push_back(' ');
 		//根据数据类型来处理消息内容
 		switch (receivedData.Type) {
 		case NORMAL_MSG:
@@ -541,7 +545,9 @@ void SendRecvProc() {
 			cout << "未知消息: " << receivedData.Type << " 不处理  " << endl;
 			break;
 		}
-		cout << "完毕" << endl;
+		ProtectCoutContorl.lock();
+		cout << HintMsg << endl;
+		ProtectCoutContorl.unlock();
 	};
 	
 
@@ -574,8 +580,12 @@ void SendRecvProc() {
 				//取出队列中的消息
 				UserParam temp = ProcQueue.front();
 				ProcQueue.pop();
+				lock.unlock();
 				//处理消息
 				MsgProc(cSocket, temp);
+			}
+			else {
+				Sleep(1);
 			}
 		}
 	};

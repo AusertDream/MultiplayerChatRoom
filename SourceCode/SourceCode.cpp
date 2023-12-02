@@ -5,7 +5,7 @@
 #include "SourceCode.h" //导入资源
 #include "InitWindows.h"
 #include "SomeTools.h"
-#include "Server.h"
+#include "TestProgram.h"
 using namespace std;
 
 HANDLE hStdOutput = 0; //添加DOS控制台窗口用于DEBUG
@@ -50,7 +50,7 @@ string CurrentTarget = "GLOBAL"; //当前聊天对象
 mutex ProtectProcQueue; //保护ProcQueue的互斥锁
 bool isSocketStart = false; //socket是否启动
 queue<UserParam> ProcQueue; //消息处理队列
-
+bool isStart = false; //是否启动了测试程序
 
 
 int WINAPI WinMain(
@@ -123,7 +123,7 @@ int WINAPI WinMain(
 		}
 		else {
 			//空闲处理
-
+			Sleep(10);
 		}
 
 	}
@@ -280,6 +280,7 @@ void thRecv(SOCKET sSocket)
 				MsgProc(recvBuffer);
 			}
 			else {
+				/*lock.unlock();*/
 				Sleep(100);
 			}
 			
@@ -312,6 +313,7 @@ void thRecv(SOCKET sSocket)
 		//将解包后的数据放入队列中
 		/*unique_lock<mutex> lock(ProtectProcQueue);*/
 		ProcQueue.push(recvBuffer);
+		/*lock.unlock();*/
 	}
 }
 
@@ -352,6 +354,10 @@ void OnCommand(WPARAM wParam) {
 		msg.assign(W2A(buffer));
 		if (msg.size() == 0) {
 			MessageBox(hMainWindow, "请不要发送空消息", "Oops", MB_OK);
+			break;
+		}
+		else if (msg.size() >= 100) {
+			MessageBox(hMainWindow, "消息过长，请不要超过100个字符", "警告", MB_OK);
 			break;
 		}
 		msg.push_back('\0');
@@ -437,14 +443,9 @@ void OnCommand(WPARAM wParam) {
 			MessageBox(hMainWindow, "测试程序已经启动，请勿重复启动", "Oops", MB_OK);
 			break;
 		}
-		MessageBox(hMainWindow, "还没做完（（（", "Oops", MB_OK);
-		break;
-
-		/*thread startserv(StartServer);
-		startserv.detach();
-		MessageBox(hMainWindow, "服务器启动中，请稍等。。。", "通知", MB_OK);*/
-		
-		MessageBox(hMainWindow, "服务启动成功", "通知", MB_OK);
+		thread thTestProgram(StartTestProgram,MAX_TEST_NUMBER);
+		thTestProgram.detach();
+		MessageBox(hMainWindow, "测试程序启动成功", "通知", MB_OK);
 		isStart = true;
 		break;
 	}

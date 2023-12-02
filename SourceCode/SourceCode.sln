@@ -7,9 +7,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ClientCode", "SourceCode.vc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerCode", "..\ServerCode\ServerCode.vcxproj", "{2FB5FF06-2320-45E9-A574-C99AD7111298}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "MultiChatRoom_Client_Setup", "..\MultiChatRoom_Setup\MultiChatRoom_Setup.vdproj", "{1F36E46E-6B55-4DF7-B852-3B8EC6B55BB3}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Client_setup", "..\Client_setup\Client_setup.vdproj", "{74F78CB9-C163-419C-95CA-D13ACC45F900}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "MultiChatRoom_Server_Setup", "..\MultiChatRoom_Server_Setup\MultiChatRoom_Server_Setup.vdproj", "{C21F2A83-BB99-491B-909C-C3E1C5B4762A}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Server_setup", "..\Server_setup\Server_setup.vdproj", "{5D7546C6-D054-4F80-972B-91B026E55A7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,14 +35,14 @@ Global
 		{2FB5FF06-2320-45E9-A574-C99AD7111298}.Release|x64.Build.0 = Release|x64
 		{2FB5FF06-2320-45E9-A574-C99AD7111298}.Release|x86.ActiveCfg = Release|Win32
 		{2FB5FF06-2320-45E9-A574-C99AD7111298}.Release|x86.Build.0 = Release|Win32
-		{1F36E46E-6B55-4DF7-B852-3B8EC6B55BB3}.Debug|x64.ActiveCfg = Debug
-		{1F36E46E-6B55-4DF7-B852-3B8EC6B55BB3}.Debug|x86.ActiveCfg = Debug
-		{1F36E46E-6B55-4DF7-B852-3B8EC6B55BB3}.Release|x64.ActiveCfg = Release
-		{1F36E46E-6B55-4DF7-B852-3B8EC6B55BB3}.Release|x86.ActiveCfg = Release
-		{C21F2A83-BB99-491B-909C-C3E1C5B4762A}.Debug|x64.ActiveCfg = Debug
-		{C21F2A83-BB99-491B-909C-C3E1C5B4762A}.Debug|x86.ActiveCfg = Debug
-		{C21F2A83-BB99-491B-909C-C3E1C5B4762A}.Release|x64.ActiveCfg = Release
-		{C21F2A83-BB99-491B-909C-C3E1C5B4762A}.Release|x86.ActiveCfg = Release
+		{74F78CB9-C163-419C-95CA-D13ACC45F900}.Debug|x64.ActiveCfg = Debug
+		{74F78CB9-C163-419C-95CA-D13ACC45F900}.Debug|x86.ActiveCfg = Debug
+		{74F78CB9-C163-419C-95CA-D13ACC45F900}.Release|x64.ActiveCfg = Release
+		{74F78CB9-C163-419C-95CA-D13ACC45F900}.Release|x86.ActiveCfg = Release
+		{5D7546C6-D054-4F80-972B-91B026E55A7A}.Debug|x64.ActiveCfg = Debug
+		{5D7546C6-D054-4F80-972B-91B026E55A7A}.Debug|x86.ActiveCfg = Debug
+		{5D7546C6-D054-4F80-972B-91B026E55A7A}.Release|x64.ActiveCfg = Release
+		{5D7546C6-D054-4F80-972B-91B026E55A7A}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
