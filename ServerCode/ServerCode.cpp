@@ -52,12 +52,6 @@ int main() {
 	UserList.insert(L"CN");
 	UserList.insert(L"Server");
 	UserList.insert(L"ALL");
-	//伪造用户列表
-	UserList.insert(L"张三");
-	UserList.insert(L"李四");
-	UserList.insert(L"王五");
-	UserList.insert(L"赵六");
-	UserList.insert(L"ChatGPT");
 	cout<<"启动成功"<<endl;
 	//创建多线程处理收发消息
 	for (int i = 0; i < MAX_NUMBER; i++) {
